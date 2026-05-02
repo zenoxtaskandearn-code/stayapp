@@ -1,152 +1,226 @@
 import bcrypt from 'bcrypt';
 import { pool } from '../config/db.js';
 
-const seed = async () => {
-  try {
-    console.log('🌱 Starting database seed...');
+const createTables = async () => {
+  console.log('🔧 Creating database tables...');
 
-    // Hash password for admin and test user
-    const adminPassword = await bcrypt.hash('admin123', 10);
-    const userPassword = await bcrypt.hash('user123', 10);
+  // Users Table
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      email VARCHAR(255) NOT NULL UNIQUE,
+      password VARCHAR(255) NOT NULL,
+      phone VARCHAR(20),
+      role VARCHAR(50) DEFAULT 'user',
+      is_verified BOOLEAN DEFAULT FALSE,
+      reset_token VARCHAR(255),
+      reset_expires DATETIME,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
 
-    // Update admin user email
-    await pool.query(
-      `UPDATE users SET email = 'amitxrajwar@gmail.com', password = ?, role = 'admin', is_verified = true WHERE email = 'admin@premiumstays.com'`,
-      [adminPassword]
-    );
+  // Categories Table
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS categories (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL UNIQUE,
+      slug VARCHAR(255),
+      description TEXT,
+      icon VARCHAR(255),
+      is_active BOOLEAN DEFAULT TRUE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
 
-    // Insert test user
-    await pool.query(
-      `INSERT INTO users (name, email, password) VALUES
-       ('John Doe', 'user@premiumstays.com', ?)
-       ON DUPLICATE KEY UPDATE id=id`,
-      [userPassword]
-    );
+  // Properties Table
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS properties (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      title VARCHAR(255) NOT NULL,
+      description TEXT,
+      location VARCHAR(255),
+      map_link TEXT,
+      monthly_price DECIMAL(10,2) DEFAULT 0,
+      deposit DECIMAL(10,2) DEFAULT 0,
+      bedrooms INT DEFAULT 0,
+      bathrooms INT DEFAULT 0,
+      square_feet INT DEFAULT 0,
+      property_type VARCHAR(50),
+      furnished VARCHAR(50),
+      status VARCHAR(50) DEFAULT 'active',
+      featured BOOLEAN DEFAULT FALSE,
+      category_id INT,
+      amenities JSON,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
 
-    // Insert sample properties
-    const properties = [
-      {
-        title: 'Luxury Downtown Apartment',
-        description: 'Experience luxury living in the heart of downtown. This modern apartment features floor-to-ceiling windows, premium finishes, and stunning city views.',
-        location: 'New York, NY',
-        monthly_price: 3500,
-        bedrooms: 2,
-        bathrooms: 2,
-        square_feet: 1200,
-        property_type: 'apartment',
-        furnished: 'furnished',
-        featured: true,
-        amenities: JSON.stringify(['WiFi', 'Gym', 'Pool', 'Parking', 'Doorman', 'A/C']),
-      },
-      {
-        title: 'Modern Villa with Pool',
-        description: 'Stunning modern villa with private pool, spacious rooms, and beautiful garden. Perfect for families looking for luxury.',
-        location: 'Miami, FL',
-        monthly_price: 5500,
-        bedrooms: 4,
-        bathrooms: 3,
-        square_feet: 2800,
-        property_type: 'villa',
-        furnished: 'semi-furnished',
-        featured: true,
-        amenities: JSON.stringify(['WiFi', 'Pool', 'Garden', 'Parking', 'A/C', 'Security']),
-      },
-      {
-        title: 'Cozy Studio in Arts District',
-        description: 'Perfect studio apartment in the vibrant arts district. Close to galleries, cafes, and public transport.',
-        location: 'Los Angeles, CA',
-        monthly_price: 1800,
-        bedrooms: 1,
-        bathrooms: 1,
-        square_feet: 600,
-        property_type: 'studio',
-        furnished: 'furnished',
-        featured: true,
-        amenities: JSON.stringify(['WiFi', 'Gym', 'Laundry', 'A/C']),
-      },
-      {
-        title: 'Spacious Family House',
-        description: 'Beautiful family house with large backyard, modern kitchen, and quiet neighborhood. Great schools nearby.',
-        location: 'Austin, TX',
-        monthly_price: 2800,
-        bedrooms: 3,
-        bathrooms: 2,
-        square_feet: 2000,
-        property_type: 'house',
-        furnished: 'unfurnished',
-        featured: false,
-        amenities: JSON.stringify(['Garden', 'Parking', 'Laundry', 'A/C', 'Garage']),
-      },
-      {
-        title: 'High-Rise Condo with View',
-        description: 'Luxury high-rise condo with breathtaking city views, modern amenities, and premium location.',
-        location: 'Chicago, IL',
-        monthly_price: 3200,
-        bedrooms: 2,
-        bathrooms: 2,
-        square_feet: 1100,
-        property_type: 'condo',
-        furnished: 'furnished',
-        featured: true,
-        amenities: JSON.stringify(['WiFi', 'Gym', 'Pool', 'Concierge', 'A/C', 'Parking']),
-      },
-      {
-        title: 'Charming Brownstone',
-        description: 'Classic brownstone with modern updates, hardwood floors, and private patio. Located in prime neighborhood.',
-        location: 'Brooklyn, NY',
-        monthly_price: 3100,
-        bedrooms: 2,
-        bathrooms: 1,
-        square_feet: 1050,
-        property_type: 'house',
-        furnished: 'semi-furnished',
-        featured: false,
-        amenities: JSON.stringify(['WiFi', 'Patio', 'Laundry', 'A/C']),
-      },
-    ];
+  // Property Images Table
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS property_images (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      property_id INT NOT NULL,
+      image_url VARCHAR(255) NOT NULL,
+      is_primary BOOLEAN DEFAULT FALSE,
+      FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE
+    )
+  `);
 
-    for (const prop of properties) {
-      const [result] = await pool.query(
-        `INSERT INTO properties
-         (title, description, location, monthly_price, bedrooms, bathrooms, square_feet, property_type, furnished, featured, amenities)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-          prop.title,
-          prop.description,
-          prop.location,
-          prop.monthly_price,
-          prop.bedrooms,
-          prop.bathrooms,
-          prop.square_feet,
-          prop.property_type,
-          prop.furnished,
-          prop.featured,
-          prop.amenities,
-        ]
-      );
+  // Bookings Table
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS bookings (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      property_id INT NOT NULL,
+      move_in_date DATE NOT NULL,
+      move_out_date DATE,
+      months INT DEFAULT 1,
+      total_amount DECIMAL(10,2) DEFAULT 0,
+      currency VARCHAR(3) DEFAULT 'USD',
+      booking_status VARCHAR(50) DEFAULT 'pending',
+      payment_status VARCHAR(50) DEFAULT 'pending',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE
+    )
+  `);
 
-      // Insert sample images for each property
-      const imageBase = 'https://images.unsplash.com/photo-';
-      const imageIds = [
-        '1600596542815-ffad4c1539a9',
-        '1600582651290-8952cb4d4dee',
-        '1600046084578-3e84d8b4a3c8',
-        '1600566753371-794470a852c3',
-        '1600576772-78d57a42aae8',
-      ];
+  // Payments Table
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS payments (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      booking_id INT NOT NULL,
+      amount DECIMAL(10,2) DEFAULT 0,
+      status VARCHAR(50) DEFAULT 'pending',
+      screenshot VARCHAR(255),
+      admin_notes TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE
+    )
+  `);
 
-      for (let i = 0; i < 3; i++) {
-        await pool.query(
-          'INSERT INTO property_images (property_id, image_url, is_primary) VALUES (?, ?, ?)',
-          [result.insertId, `${imageBase}${imageIds[i]}?w=800&q=80`, i === 0]
-        );
-      }
+  // Payment Methods Table
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS payment_methods (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      description TEXT,
+      instructions TEXT,
+      is_active BOOLEAN DEFAULT TRUE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  // Property Payment Methods (Junction Table)
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS property_payment_methods (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      property_id INT NOT NULL,
+      payment_method_id INT NOT NULL,
+      FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE,
+      FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id) ON DELETE CASCADE
+    )
+  `);
+
+  // Reviews Table
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS reviews (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      property_id INT NOT NULL,
+      rating INT CHECK (rating >= 1 AND rating <= 5),
+      comment TEXT,
+      is_approved BOOLEAN DEFAULT FALSE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE
+    )
+  `);
+
+  // Settings Table
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS settings (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      website_name VARCHAR(255),
+      theme_color VARCHAR(255),
+      footer_text TEXT,
+      contact_email VARCHAR(255),
+      contact_phone VARCHAR(50),
+      payment_instructions TEXT,
+      bank_name VARCHAR(255),
+      account_name VARCHAR(255),
+      account_number VARCHAR(50),
+      currency VARCHAR(3) DEFAULT 'USD'
+    )
+  `);
+
+  console.log('✅ Database tables created successfully!');
+};
+
+const seedAdmin = async () => {
+  console.log('👤 Setting up Admin user...');
+  const adminPassword = await bcrypt.hash('admin123', 10);
+  const userPassword = await bcrypt.hash('user123', 10);
+
+  // Admin
+  await pool.query(
+    `INSERT INTO users (name, email, password, role, is_verified) 
+     VALUES ('Admin User', 'amitxrajwar@gmail.com', ?, 'admin', TRUE)
+     ON DUPLICATE KEY UPDATE password = VALUES(password)`,
+    [adminPassword]
+  );
+  console.log('✅ Admin User: amitxrajwar@gmail.com / admin123');
+
+  // Test User
+  await pool.query(
+    `INSERT INTO users (name, email, password, role, is_verified) VALUES 
+     ('Test User', 'user@premiumstays.com', ?, 'user', TRUE)
+     ON DUPLICATE KEY UPDATE password = VALUES(password)`,
+    [userPassword]
+  );
+  console.log('✅ Test User: user@premiumstays.com / user123');
+};
+
+const seedSampleData = async () => {
+  console.log('📦 Inserting sample properties...');
+  const [count] = await pool.query('SELECT COUNT(*) as count FROM properties');
+  if (count[0].count > 0) {
+    console.log('⏭️ Properties already exist, skipping...');
+    return;
+  }
+
+  const properties = [
+    {
+      title: 'Luxury Downtown Apartment',
+      description: 'Modern apartment with city views.',
+      location: 'New York, NY',
+      monthly_price: 3500,
+      bedrooms: 2, bathrooms: 2, square_feet: 1200,
+      property_type: 'apartment', furnished: 'furnished', featured: true,
+      amenities: JSON.stringify(['WiFi', 'Gym', 'Pool']),
     }
+  ];
 
-    console.log('✅ Database seeded successfully!');
-    console.log('');
-    console.log('📧 Admin Login: amitxrajwar@gmail.com / admin123');
-    console.log('📧 User Login: user@premiumstays.com / user123');
+  for (const prop of properties) {
+    await pool.query(
+      `INSERT INTO properties (title, description, location, monthly_price, bedrooms, bathrooms, square_feet, property_type, furnished, featured, amenities)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [prop.title, prop.description, prop.location, prop.monthly_price, prop.bedrooms, prop.bathrooms, prop.square_feet, prop.property_type, prop.furnished, prop.featured, prop.amenities]
+    );
+  }
+  console.log('✅ Sample properties added');
+};
+
+const runSeed = async () => {
+  try {
+    console.log('\n🌱 Starting Automated Database Setup...\n');
+    
+    await createTables();
+    await seedAdmin();
+    await seedSampleData();
+    
+    console.log('\n🎉 Database setup completed successfully!\n');
     process.exit(0);
   } catch (error) {
     console.error('❌ Seed failed:', error);
@@ -154,4 +228,4 @@ const seed = async () => {
   }
 };
 
-seed();
+runSeed();
