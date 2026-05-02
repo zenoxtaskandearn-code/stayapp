@@ -9,8 +9,7 @@ const seed = async () => {
     const adminPassword = await bcrypt.hash('admin123', 10);
     const userPassword = await bcrypt.hash('user123', 10);
 
-// Update admin user email
-    const adminPassword = await bcrypt.hash('admin123', 10);
+    // Update admin user email
     await pool.query(
       `UPDATE users SET email = 'amitxrajwar@gmail.com', password = ?, role = 'admin', is_verified = true WHERE email = 'admin@premiumstays.com'`,
       [adminPassword]

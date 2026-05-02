@@ -1,61 +1,135 @@
 #!/bin/bash
 
-# Colors for output
+# ==========================================
+# 🚀 StayApp Automated Deployment Script
+# ==========================================
+# 1. Push this file to GitHub
+# 2. Run: ./deploy.sh on your VPS
+# ==========================================
+
+# --- CONFIGURATION START ---
+DOMAIN="theblueground-rental-property.ref37108542.online"
+DB_PASSWORD="SecurePass123!"
+EMAIL_USER="info@estate-theblueground.co.uk"
+EMAIL_PASS='muie1985A"'
+SMTP_HOST="mail.privateemail.com"
+SMTP_PORT="465"
+SMTP_SECURE="true"
+CLOUDINARY_NAME="dyeqav5do"
+CLOUDINARY_KEY="452973666565658"
+CLOUDINARY_SECRET="6qO_Ai6QEbLhhRF3HQBqtppKfhk"
+# --- CONFIGURATION END ---
+
+RED='\033[0;31m'
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
-RED='\033[0;31m'
 NC='\033[0m'
 
-echo -e "${BLUE}🚀 Starting Automated Deployment...${NC}"
+log_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
+log_success() { echo -e "${GREEN}[✓]${NC} $1"; }
+log_error() { echo -e "${RED}[✗]${NC} $1"; exit 1; }
 
-# 1. Pull latest code
-echo -e "${BLUE}📥 Pulling latest code from git...${NC}"
+echo -e "\n${BLUE}🚀 Starting Deployment for ${DOMAIN}...${NC}\n"
+
+# 1. Pull Code (Force overwrite local conflicts)
+log_info "Pulling latest code..."
+git stash --include-untracked 2>/dev/null
 git pull origin main
-if [ $? -ne 0 ]; then
-    echo -e "${RED}❌ Git pull failed! Aborting.${NC}"
-    exit 1
-fi
 
-# 2. Backend Update & Restart
-echo -e "${BLUE}⚙️ Updating Backend...${NC}"
+# 2. Backend Setup
+log_info "Configuring Backend..."
+cat > server/.env << EOF
+PORT=5001
+NODE_ENV=production
+DB_HOST=localhost
+DB_USER=rental_user
+DB_PASSWORD=${DB_PASSWORD}
+DB_NAME=rental_property
+DB_PORT=3306
+JWT_SECRET=$(openssl rand -hex 32)
+JWT_EXPIRES_IN=30d
+CLIENT_URL=http://${DOMAIN}
+EMAIL_USER=${EMAIL_USER}
+EMAIL_PASS=${EMAIL_PASS}
+EMAIL_FROM=Blueground <${EMAIL_USER}>
+SMTP_HOST=${SMTP_HOST}
+SMTP_PORT=${SMTP_PORT}
+SMTP_SECURE=${SMTP_SECURE}
+CLOUDINARY_CLOUD_NAME=${CLOUDINARY_NAME}
+CLOUDINARY_API_KEY=${CLOUDINARY_KEY}
+CLOUDINARY_API_SECRET=${CLOUDINARY_SECRET}
+EOF
+log_success "Created server/.env"
+
 cd server
+log_info "Installing Backend dependencies..."
+npm install --production --quiet
 
-# Install dependencies
-npm install --production
+log_info "Checking Database..."
+mysql -u root -e "CREATE DATABASE IF NOT EXISTS rental_property;" 2>/dev/null
+mysql -u root -e "CREATE USER IF NOT EXISTS 'rental_user'@'localhost' IDENTIFIED BY '${DB_PASSWORD}'; GRANT ALL PRIVILEGES ON rental_property.* TO 'rental_user'@'localhost'; FLUSH PRIVILEGES;" 2>/dev/null
 
-# Check if .env exists
-if [ ! -f .env ]; then
-    echo -e "${RED}⚠️ .env file missing in server directory!${NC}"
-    echo "Please copy .env.example to .env and configure it before running."
-    exit 1
-fi
+# Run Seed if 'users' table is missing
+mysql -u rental_user -p"${DB_PASSWORD}" rental_property -e "SELECT 1 FROM users LIMIT 1;" 2>/dev/null || {
+    log_info "Database tables not found. Running seed..."
+    npm run seed
+}
 
-# Restart or Start PM2 process
-echo "Restarting Backend..."
-pm2 restart rental-server 2>/dev/null || pm2 start src/app.js --name rental-server
-
+log_info "Starting Backend via PM2..."
+pm2 start src/app.js --name rental-server --silent 2>/dev/null || pm2 restart rental-server
+pm2 save > /dev/null
 cd ..
 
-# 3. Frontend Update & Build
-echo -e "${BLUE}🎨 Building Frontend...${NC}"
+# 3. Frontend Setup
+log_info "Building Frontend..."
 cd client
-
-# Install dependencies
-npm install
-
-# Build production bundle
+# Fix API URL to use relative path for Nginx
+sed -i "s|baseURL:.*|baseURL: '/api',|" src/services/api.js 2>/dev/null || true
+npm install --quiet
 npm run build
-if [ $? -ne 0 ]; then
-    echo -e "${RED}❌ Frontend build failed!${NC}"
-    exit 1
-fi
+log_success "Frontend build complete"
 
-# Deploy to Nginx directory
-echo -e "${BLUE}📦 Deploying to Web Server...${NC}"
-# Change this path if your Nginx points to a different folder
+log_info "Deploying to Web Server..."
+sudo mkdir -p /var/www/html/rental-app
+sudo rm -rf /var/www/html/rental-app/*
 sudo cp -r dist/* /var/www/html/rental-app/
-
 cd ..
 
-echo -e "${GREEN}✅ Deployment Successful! 🎉${NC}"
-echo -e "${BLUE}Your app is now live.${NC}"
+# 4. Nginx Configuration
+log_info "Configuring Nginx..."
+sudo tee /etc/nginx/sites-available/rental-app > /dev/null << EOF
+server {
+    listen 80;
+    server_name ${DOMAIN};
+    root /var/www/html/rental-app;
+    index index.html;
+
+    location /api {
+        proxy_pass http://localhost:5001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_cache_bypass \$http_upgrade;
+    }
+
+    location / {
+        try_files \$uri \$uri/ /index.html;
+    }
+}
+EOF
+
+sudo ln -sf /etc/nginx/sites-available/rental-app /etc/nginx/sites-enabled/
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo nginx -t && sudo systemctl reload nginx
+log_success "Nginx configured and reloaded"
+
+# 5. Firewall
+sudo ufw allow 80/tcp > /dev/null 2>&1
+sudo ufw allow 443/tcp > /dev/null 2>&1
+
+echo -e "\n${GREEN}╔══════════════════════════════════════════╗"
+echo -e "║          ✅ DEPLOYMENT SUCCESSFUL!         ║"
+echo -e "╚══════════════════════════════════════════╝${NC}"
+echo -e "🌐 Access: ${BLUE}http://${DOMAIN}${NC}\n"
