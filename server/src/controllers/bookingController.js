@@ -240,3 +240,18 @@ export const updateBookingStatus = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const updateBooking = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { move_in_date, months } = req.body;
+
+    if (move_in_date) {
+      await pool.query('UPDATE bookings SET move_in_date = ? WHERE id = ?', [move_in_date, id]);
+    }
+
+    res.json({ message: 'Booking updated successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

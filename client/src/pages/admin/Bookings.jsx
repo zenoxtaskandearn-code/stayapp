@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiCheck, FiX, FiCalendar, FiDollarSign, FiUser, FiHome, FiPhone, FiMail, FiImage, FiSearch, FiFilter, FiMoreVertical, FiMapPin, FiClock } from 'react-icons/fi';
+import { FiCheck, FiX, FiCalendar, FiDollarSign, FiUser, FiHome, FiPhone, FiMail, FiImage, FiSearch, FiFilter, FiMoreVertical, FiMapPin, FiClock, FiEdit } from 'react-icons/fi';
 import { bookingService } from '../../services/bookingService';
 import Loader from '../../components/Loader';
 
@@ -23,6 +23,8 @@ const AdminBookings = () => {
   const [search, setSearch] = useState('');
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [updatingId, setUpdatingId] = useState(null);
+  const [editingDate, setEditingDate] = useState(false);
+  const [newMoveInDate, setNewMoveInDate] = useState('');
 
   const getCurrencySymbol = (currency) => {
     const symbols = { USD: '$', GBP: '£', EUR: '€' };
@@ -250,11 +252,54 @@ const AdminBookings = () => {
 
               {/* Booking Info */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                <div className="bg-gray-50 rounded-xl p-3 text-center"><div className="text-xs text-gray-500">Check-in</div><div className="font-semibold text-sm">{selectedBooking.move_in_date ? new Date(selectedBooking.move_in_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '-'}</div></div>
+                <div className="bg-gray-50 rounded-xl p-3 text-center">
+                  <div className="text-xs text-gray-500">Check-in</div>
+                  {editingDate ? (
+                    <input
+                      type="date"
+                      value={newMoveInDate}
+                      onChange={(e) => setNewMoveInDate(e.target.value)}
+                      className="w-full text-sm border rounded px-2 py-1 mt-1"
+                    />
+                  ) : (
+                    <div className="font-semibold text-sm flex items-center justify-center gap-1">
+                      {selectedBooking.move_in_date ? new Date(selectedBooking.move_in_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '-'}
+                      <button onClick={() => { setNewMoveInDate(selectedBooking.move_in_date?.split('T')[0]); setEditingDate(true); }} className="ml-1 text-primary hover:text-primary-dark">
+                        <FiEdit size={12} />
+                      </button>
+                    </div>
+                  )}
+                </div>
                 <div className="bg-gray-50 rounded-xl p-3 text-center"><div className="text-xs text-gray-500">Check-out</div><div className="font-semibold text-sm">{selectedBooking.move_out_date ? new Date(selectedBooking.move_out_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '-'}</div></div>
                 <div className="bg-gray-50 rounded-xl p-3 text-center"><div className="text-xs text-gray-500">Duration</div><div className="font-semibold text-sm">{selectedBooking.months} mo</div></div>
                 <div className="bg-gray-50 rounded-xl p-3 text-center"><div className="text-xs text-gray-500">Amount</div><div className="font-semibold text-sm text-primary">{formatPrice(selectedBooking.total_amount, selectedBooking.currency)}</div></div>
               </div>
+
+              {editingDate && (
+                <div className="flex gap-2 mb-4">
+                  <button
+                    onClick={async () => {
+                      try {
+                        await bookingService.updateBooking(selectedBooking.id, { move_in_date: newMoveInDate });
+                        setSelectedBooking({ ...selectedBooking, move_in_date: newMoveInDate });
+                        setEditingDate(false);
+                        alert('Move-in date updated!');
+                      } catch (error) {
+                        alert('Error updating date');
+                      }
+                    }}
+                    className="px-4 py-2 bg-green-600 text-white rounded-xl text-sm font-medium"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={() => setEditingDate(false)}
+                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl text-sm font-medium"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
 
               {/* Payment Proof */}
               {selectedBooking.payment_screenshot ? (
