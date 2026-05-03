@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaPhone, FaEnvelope, FaArrowUp } from 'react-icons/fa';
+import { FaPhone, FaEnvelope, FaArrowUp } from 'react-icons/fa';
 import Logo from './Logo';
 
 const WaveShape = () => (
@@ -29,22 +29,6 @@ const Footer = () => {
             <p className="text-sm text-gray-400 mb-4 leading-relaxed">
               Find your perfect home to stay with our premium rental property platform.
             </p>
-            <div className="flex gap-2">
-              {[
-                { icon: FaFacebook, href: '#' },
-                { icon: FaTwitter, href: '#' },
-                { icon: FaInstagram, href: '#' },
-                { icon: FaLinkedin, href: '#' },
-              ].map((social, index) => (
-                <a
-                  key={index}
-                  href={social.href}
-                  className="w-9 h-9 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-primary transition-all"
-                >
-                  <social.icon size={14} />
-                </a>
-              ))}
-            </div>
           </div>
 
           {/* Quick Links */}
