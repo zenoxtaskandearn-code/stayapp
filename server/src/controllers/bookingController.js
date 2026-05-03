@@ -254,7 +254,7 @@ export const updateBookingStatus = async (req, res) => {
 export const updateBooking = async (req, res) => {
   try {
     const { id } = req.params;
-    const { move_in_date, months } = req.body;
+    const { move_in_date, months, payment_method_id } = req.body;
 
     // Get current booking to check ownership
     const [current] = await pool.query('SELECT * FROM bookings WHERE id = ?', [id]);
@@ -303,6 +303,12 @@ export const updateBooking = async (req, res) => {
         updates.push('move_out_date = ?');
         params.push(newMoveOutDate);
       }
+    }
+
+    // Allow updating payment method
+    if (payment_method_id) {
+      updates.push('payment_method_id = ?');
+      params.push(payment_method_id);
     }
 
     if (updates.length > 0) {

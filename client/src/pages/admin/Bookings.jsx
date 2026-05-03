@@ -27,6 +27,7 @@ const AdminBookings = () => {
   const [editingBooking, setEditingBooking] = useState(false);
   const [newMoveInDate, setNewMoveInDate] = useState('');
   const [editForm, setEditForm] = useState({ move_in_date: '', months: 0 });
+  const [paymentMethods, setPaymentMethods] = useState([]);
 
   const getCurrencySymbol = (currency) => {
     const symbols = { USD: '$', GBP: '£', EUR: '€' };
@@ -37,7 +38,18 @@ const AdminBookings = () => {
 
   useEffect(() => {
     fetchBookings();
+    fetchPaymentMethods();
   }, []);
+
+  const fetchPaymentMethods = async () => {
+    try {
+      const res = await fetch('http://localhost:5001/api/payment-methods/admin');
+      const data = await res.json();
+      setPaymentMethods(data || []);
+    } catch (e) {
+      console.log('Error fetching payment methods:', e);
+    }
+  };
 
   const fetchBookings = async () => {
     try {
@@ -282,7 +294,7 @@ const AdminBookings = () => {
 
               {/* Full Edit Button */}
               <button 
-                onClick={() => { setEditForm({ move_in_date: selectedBooking.move_in_date?.split('T')[0], months: selectedBooking.months }); setEditingBooking(true); }}
+                onClick={() => { setEditForm({ move_in_date: selectedBooking.move_in_date?.split('T')[0], months: selectedBooking.months, payment_method_id: selectedBooking.payment_method_id || '' }); setEditingBooking(true); }}
                 className="w-full py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 font-medium flex items-center justify-center gap-2 mb-4"
               >
                 <FiEdit size={16} /> Edit Booking
@@ -308,6 +320,15 @@ const AdminBookings = () => {
                       <option value={12}>1 Year</option>
                       <option value={24}>2 Years</option>
                       <option value={36}>3 Years</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-1">Payment Method</label>
+                    <select value={editForm.payment_method_id || ''} onChange={(e) => setEditForm({...editForm, payment_method_id: e.target.value})} className="w-full px-3 py-2 border rounded-lg">
+                      <option value="">Select Payment Method</option>
+                      {paymentMethods.map(pm => (
+                        <option key={pm.id} value={pm.id}>{pm.name}</option>
+                      ))}
                     </select>
                   </div>
                   <div className="flex gap-2">
