@@ -300,8 +300,9 @@ do_test "10.6" "PUT" "/bookings/${BOOKING_ID}/status" "Approve Booking" "200" \
 # ---- Phase 11: Payments ----
 echo -e "\n${CYAN}=== Phase 11: Payments ===${NC}"
 
+# Get payment ID from booking response
 PAYMENT_ID=$(curl -s "${BASE_URL}/bookings/${BOOKING_ID}" \
-  -H "Authorization: Bearer ${USER_TOKEN}" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('payment',{}).get('id',''))" 2>/dev/null)
+  -H "Authorization: Bearer ${USER_TOKEN}" 2>/dev/null | grep -oE '"payment"[[:space:]]*:[[:space:]]*{[^}]*"id"[[:space:]]*:[[:space:]]*[0-9]+' | grep -oE '[0-9]+$' | head -1)
 echo -e "  Payment ID: ${PAYMENT_ID}"
 
 if [ -n "$PAYMENT_ID" ]; then
