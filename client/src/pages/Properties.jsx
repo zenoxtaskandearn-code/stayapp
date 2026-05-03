@@ -4,7 +4,8 @@ import PropertyCard from '../components/PropertyCard';
 import { PropertyGridSkeleton } from '../components/PropertyCardSkeleton';
 import { propertyService } from '../services/propertyService';
 import { useSearchParams } from 'react-router-dom';
-import { FaSearch, FaFilter, FaTimes, FaMapMarkerAlt, FaHome, FaDollarSign } from 'react-icons/fa';
+import { FaSearch, FaFilter, FaTimes, FaMapMarkerAlt, FaHome } from 'react-icons/fa';
+import { useCurrencyStore } from '../store/useStore';
 
 const Properties = () => {
   const [searchParams] = useSearchParams();
@@ -13,6 +14,7 @@ const Properties = () => {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [locations, setLocations] = useState([]);
+  const { currency, symbol } = useCurrencyStore();
   const [filters, setFilters] = useState({
     search: searchParams.get('search') || '',
     type: '',
@@ -154,9 +156,9 @@ const Properties = () => {
 
       {/* Price Range */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">Price Range (Monthly)</label>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">Price Range ({currency}/Monthly)</label>
         <div className="relative">
-          <FaDollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">{symbol}</span>
           <select
             name="minPrice"
             value={filters.minPrice}
@@ -164,18 +166,18 @@ const Properties = () => {
             className="input-premium pl-10 mb-3"
           >
             <option value="">Min Price</option>
-            <option value="500">$500</option>
-            <option value="1000">$1,000</option>
-            <option value="1500">$1,500</option>
-            <option value="2000">$2,000</option>
-            <option value="2500">$2,500</option>
-            <option value="3000">$3,000</option>
-            <option value="4000">$4,000</option>
-            <option value="5000">$5,000</option>
+            <option value="500">{symbol}500</option>
+            <option value="1000">{symbol}1,000</option>
+            <option value="1500">{symbol}1,500</option>
+            <option value="2000">{symbol}2,000</option>
+            <option value="2500">{symbol}2,500</option>
+            <option value="3000">{symbol}3,000</option>
+            <option value="4000">{symbol}4,000</option>
+            <option value="5000">{symbol}5,000</option>
           </select>
         </div>
         <div className="relative">
-          <FaDollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">{symbol}</span>
           <select
             name="maxPrice"
             value={filters.maxPrice}
@@ -183,14 +185,14 @@ const Properties = () => {
             className="input-premium pl-10"
           >
             <option value="">Max Price</option>
-            <option value="1000">$1,000</option>
-            <option value="1500">$1,500</option>
-            <option value="2000">$2,000</option>
-            <option value="2500">$2,500</option>
-            <option value="3000">$3,000</option>
-            <option value="4000">$4,000</option>
-            <option value="5000">$5,000</option>
-            <option value="10000">$10,000</option>
+            <option value="1000">{symbol}1,000</option>
+            <option value="1500">{symbol}1,500</option>
+            <option value="2000">{symbol}2,000</option>
+            <option value="2500">{symbol}2,500</option>
+            <option value="3000">{symbol}3,000</option>
+            <option value="4000">{symbol}4,000</option>
+            <option value="5000">{symbol}5,000</option>
+            <option value="10000">{symbol}10,000</option>
           </select>
         </div>
       </div>
