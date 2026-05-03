@@ -421,8 +421,8 @@ const AdminProperties = () => {
                         </div>
                         <div>
                           <div className="font-medium">{pm.name}</div>
-                          {pm.description && (
-                            <div className="text-xs text-gray-500 mt-1">{pm.description}</div>
+                          {pm.instructions && (
+                            <div className="text-xs text-gray-500 mt-1" dangerouslySetInnerHTML={{ __html: pm.instructions.replace(/\n/g, '<br/>') }} />
                           )}
                         </div>
                       </div>
