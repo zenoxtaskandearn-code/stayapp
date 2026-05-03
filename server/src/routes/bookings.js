@@ -16,6 +16,6 @@ router.get('/my', authenticate, getMyBookings);
 router.get('/:id', authenticate, getBookingById);
 router.get('/', authenticate, authorize('admin'), getAllBookings);
 router.put('/:id/status', authenticate, authorize('admin'), updateBookingStatus);
-router.put('/:id', authenticate, authorize('admin'), updateBooking);
+router.put('/:id', authenticate, updateBooking);
 
 export default router;

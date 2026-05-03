@@ -29,10 +29,10 @@ const Booking = () => {
 
   const getMoveOutDate = () => {
     if (!formData.moveIn || !formData.months) return '-';
-    const start = new Date(formData.moveIn);
-    const end = new Date(start);
-    end.setMonth(end.getMonth() + formData.months);
-    return end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const [y, m, d] = formData.moveIn.split('-').map(Number);
+    const start = new Date(y, m - 1, d);
+    start.setMonth(start.getMonth() + formData.months);
+    return start.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
   const urlParams = new URLSearchParams(window.location.search);

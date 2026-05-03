@@ -22,10 +22,10 @@ const PropertyDetails = () => {
   // Calculate move out date
   const getMoveOutDate = () => {
     if (!moveInDate) return '';
-    const start = new Date(moveInDate);
-    const end = new Date(start);
-    end.setMonth(end.getMonth() + months);
-    return end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const [y, m, d] = moveInDate.split('-').map(Number);
+    const start = new Date(y, m - 1, d);
+    start.setMonth(start.getMonth() + months);
+    return start.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
   useEffect(() => {

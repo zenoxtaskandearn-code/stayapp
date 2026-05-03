@@ -21,9 +21,11 @@ export const createBooking = async (req, res) => {
 
     // Calculate move_out_date if not provided
     let finalMoveOutDate = move_out_date;
+    const monthsInt = parseInt(months) || 1;
     if (!finalMoveOutDate && move_in_date && months) {
-      const startDate = new Date(move_in_date);
-      startDate.setMonth(startDate.getMonth() + months);
+      const [y, m, d] = move_in_date.split('-').map(Number);
+      const startDate = new Date(y, m - 1, d);
+      startDate.setMonth(startDate.getMonth() + monthsInt);
       finalMoveOutDate = startDate.toISOString().split('T')[0];
     }
 
@@ -254,8 +256,58 @@ export const updateBooking = async (req, res) => {
     const { id } = req.params;
     const { move_in_date, months } = req.body;
 
+    // Get current booking to check ownership
+    const [current] = await pool.query('SELECT * FROM bookings WHERE id = ?', [id]);
+    if (!current.length) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    // Allow admins to edit any booking, or users to edit their own bookings
+    const isAdmin = req.user?.role === 'admin';
+    const isOwner = current[0].user_id === req.user?.id;
+
+    if (!isAdmin && !isOwner) {
+      return res.status(403).json({ message: 'Not authorized to edit this booking' });
+    }
+
+    const updates = [];
+    const params = [];
+
+    // Only allow editing move_in_date and months
     if (move_in_date) {
-      await pool.query('UPDATE bookings SET move_in_date = ? WHERE id = ?', [move_in_date, id]);
+      updates.push('move_in_date = ?');
+      params.push(move_in_date);
+      
+      // Also update move_out_date based on new move_in_date and existing months
+      const monthsToUse = months || current[0].months;
+      const [y, m, d] = move_in_date.split('-').map(Number);
+      const startDate = new Date(y, m - 1, d);
+      startDate.setMonth(startDate.getMonth() + monthsToUse);
+      const newMoveOutDate = startDate.toISOString().split('T')[0];
+      
+      updates.push('move_out_date = ?');
+      params.push(newMoveOutDate);
+    }
+
+    if (months) {
+      updates.push('months = ?');
+      params.push(months);
+      
+      // Also update move_out_date based on existing move_in_date and new months
+      if (!move_in_date && current[0].move_in_date) {
+        const [y, m, d] = current[0].move_in_date.split('-').map(Number);
+        const startDate = new Date(y, m - 1, d);
+        startDate.setMonth(startDate.getMonth() + months);
+        const newMoveOutDate = startDate.toISOString().split('T')[0];
+        
+        updates.push('move_out_date = ?');
+        params.push(newMoveOutDate);
+      }
+    }
+
+    if (updates.length > 0) {
+      params.push(id);
+      await pool.query(`UPDATE bookings SET ${updates.join(', ')} WHERE id = ?`, params);
     }
 
     res.json({ message: 'Booking updated successfully' });

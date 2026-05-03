@@ -10,9 +10,9 @@ import Loader from '../../components/Loader';
 
 const amenitiesList = ['WiFi', 'Pool', 'Garden', 'Parking', 'A/C', 'Security', 'Kitchen', 'Washer', 'Gym', 'Balcony', 'Fireplace', 'Heating', 'TV'];
 const currencyOptions = [
-  { code: 'USD', symbol: '$' },
   { code: 'EUR', symbol: '€' },
   { code: 'GBP', symbol: '£' },
+  { code: 'USD', symbol: '$' },
 ];
 
 const AdminProperties = () => {
@@ -26,7 +26,7 @@ const AdminProperties = () => {
   const [editProperty, setEditProperty] = useState(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
-  const [displayCurrency, setDisplayCurrency] = useState('USD');
+  const [displayCurrency, setDisplayCurrency] = useState('EUR');
   const [formData, setFormData] = useState({
     title: '', location: '', description: '', map_link: '', monthly_price: '', deposit: '', bedrooms: '', bathrooms: '', square_feet: '', property_type: '', category_id: '', status: 'available', amenities: [], images: [], payment_method_ids: []
   });
