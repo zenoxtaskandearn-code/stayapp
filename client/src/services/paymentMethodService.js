@@ -4,11 +4,14 @@ export const paymentMethodService = {
   // Get all active payment methods (public)
   getAll: () => api.get('/payment-methods'),
   
+  // Get single payment method by ID (public)
+  getById: (id) => api.get(`/payment-methods/${id}`),
+  
   // Admin: Get all payment methods (including inactive)
   getAllAdmin: () => api.get('/payment-methods/admin'),
   
   // Admin: Get payment method by ID
-  getById: (id) => api.get(`/payment-methods/admin/${id}`),
+  getByIdAdmin: (id) => api.get(`/payment-methods/admin/${id}`),
   
   // Admin: Create payment method
   create: (data) => api.post('/payment-methods/admin', data),
