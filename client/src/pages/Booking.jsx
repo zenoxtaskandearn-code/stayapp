@@ -92,7 +92,7 @@ const Booking = () => {
         total_amount: property?.monthly_price * formData.months,
         currency: currency,
       };
-      const res = await bookingService.create(bookingData);
+      const res = await bookingService.createBooking(bookingData);
       if (res.data?.booking?.id) {
         navigate(`/payment/${res.data.booking.id}`);
       }
