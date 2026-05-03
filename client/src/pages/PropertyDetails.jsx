@@ -121,7 +121,7 @@ const PropertyDetails = () => {
 
               <div className="mb-8">
                 <h2 className="text-xl font-semibold mb-3">Description</h2>
-                <p className="text-gray-600 leading-relaxed">{property.description}</p>
+                <div className="text-gray-600 leading-relaxed" dangerouslySetInnerHTML={{ __html: property.description }} />
               </div>
 
               {property.amenities?.length > 0 && (

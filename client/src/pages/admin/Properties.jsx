@@ -390,7 +390,7 @@ title: '', location: '', description: '', map_link: '', monthly_price: '', depos
                       <option value="5">5+ Baths</option>
                     </select>
                   </div>
-                  <div><label className="block text-sm font-medium text-gray-700 mb-1">Square Feet</label><input type="number" value={formData.square_feet} onChange={(e) => setFormData({...formData, square_feet: e.target.value})} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" /></div>
+                  <div><label className="block text-sm font-medium text-gray-700 mb-1">Square Meters (m²)</label><input type="number" value={formData.square_feet} onChange={(e) => setFormData({...formData, square_feet: e.target.value})} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" /></div>
                   <div><label className="block text-sm font-medium text-gray-700 mb-1">Status</label><select value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"><option value="available">Available</option><option value="inactive">Inactive</option></select></div>
                 </div>
               </div>
