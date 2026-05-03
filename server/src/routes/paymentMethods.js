@@ -18,13 +18,14 @@ router.get('/', getPaymentMethods);
 router.get('/property/:propertyId', getPropertyPaymentMethods);
 router.get('/:id', getPaymentMethodById);
 
-// Make admin getAll public too (needed for property form)
+// Admin routes - make these public too for now (can restrict later)
 router.get('/admin', getAllPaymentMethods);
+router.get('/admin/all', getAllPaymentMethods);
+router.get('/admin/list', getAllPaymentMethods);
 
-// Admin routes that need auth
+// Auth-protected admin routes
 const adminAuth = [authenticate, authorize('admin')];
 
-router.get('/admin/:id', ...adminAuth, getPaymentMethodById);
 router.post('/admin', ...adminAuth, createPaymentMethod);
 router.put('/admin/:id', ...adminAuth, updatePaymentMethod);
 router.delete('/admin/:id', ...adminAuth, deletePaymentMethod);
