@@ -146,10 +146,10 @@ const PropertyDetails = () => {
                   <h2 className="text-xl font-semibold mb-3">Accepted Payment Methods</h2>
                   <div className="space-y-3">
                     {property.payment_methods.map((method) => (
-                      <div key={method.id} className="bg-gray-50 rounded-xl p-4">
-                        <div className="font-semibold text-gray-900">{method.name}</div>
-                        {method.instructions && (
-                          <div className="text-sm text-gray-600 mt-1" dangerouslySetInnerHTML={{ __html: method.instructions }} />
+                      <div key={method.id} className="bg-gray-900 rounded-xl p-4">
+                        <div className="font-semibold text-white">{method.name}</div>
+                        {method.description && (
+                          <div className="text-sm text-gray-300 mt-1">{method.description.replace(/<[^>]*>/g, '')}</div>
                         )}
                       </div>
                     ))}
