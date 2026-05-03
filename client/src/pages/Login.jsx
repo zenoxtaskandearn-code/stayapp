@@ -22,7 +22,21 @@ const Login = () => {
     try {
       const res = await authService.login(formData);
       login(res.data.user, res.data.token);
-      navigate(res.data.user.role === 'admin' ? '/admin' : '/');
+      
+      const returnUrl = localStorage.getItem('returnToBooking');
+      const pendingBooking = localStorage.getItem('pendingBooking');
+      
+      if (returnUrl) {
+        localStorage.removeItem('returnToBooking');
+        localStorage.removeItem('pendingBooking');
+        navigate(returnUrl);
+      } else if (pendingBooking) {
+        localStorage.removeItem('pendingBooking');
+        const pb = JSON.parse(pendingBooking);
+        navigate(`/booking/${pb.propertyId}?moveIn=${pb.moveIn}&months=${pb.months}`);
+      } else {
+        navigate(res.data.user.role === 'admin' ? '/admin' : '/');
+      }
     } catch (error) {
       setError(error.response?.data?.message || 'Login failed');
     } finally {

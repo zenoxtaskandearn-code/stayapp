@@ -119,6 +119,7 @@ const AdminProperties = () => {
         map_link: property.map_link || '',
         monthly_price: property.monthly_price || '',
         deposit: property.deposit || '',
+        min_rental_months: property.min_rental_months || '',
         bedrooms: property.bedrooms || '',
         bathrooms: property.bathrooms || '',
         square_feet: property.square_feet || '',
@@ -132,7 +133,7 @@ const AdminProperties = () => {
     } else {
       setEditProperty(null);
       setFormData({
-        title: '', location: '', description: '', map_link: '', monthly_price: '', deposit: '', bedrooms: '', bathrooms: '', square_feet: '', property_type: '', category_id: '', status: 'available', amenities: [], images: [], payment_method_ids: []
+title: '', location: '', description: '', map_link: '', monthly_price: '', deposit: '', min_rental_months: '', bedrooms: '', bathrooms: '', square_feet: '', property_type: '', category_id: '', status: 'available', amenities: [], images: [], payment_method_ids: []
       });
     }
     setShowModal(true);
@@ -179,6 +180,7 @@ const AdminProperties = () => {
         location: formData.location,
         monthly_price: parseFloat(formData.monthly_price) || 0,
         deposit: formData.deposit ? parseFloat(formData.deposit) : 0,
+        min_rental_months: formData.min_rental_months ? parseInt(formData.min_rental_months) : 0,
         bedrooms: parseInt(formData.bedrooms) || 0,
         bathrooms: parseInt(formData.bathrooms) || 0,
         square_feet: parseInt(formData.square_feet) || 0,
@@ -336,6 +338,17 @@ const AdminProperties = () => {
                     </div>
                   </div>
                     <div><label className="block text-sm font-medium text-gray-700 mb-1">Security Deposit</label><input type="number" value={formData.deposit} onChange={(e) => setFormData({...formData, deposit: e.target.value})} placeholder="One-time deposit" className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" /></div>
+                  <div><label className="block text-sm font-medium text-gray-700 mb-1">Min Rental Months</label>
+                    <select value={formData.min_rental_months || ''} onChange={(e) => setFormData({...formData, min_rental_months: e.target.value})} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+                      <option value="">No minimum</option>
+                      <option value="1">1 Month</option>
+                      <option value="3">3 Months</option>
+                      <option value="6">6 Months</option>
+                      <option value="12">1 Year</option>
+                      <option value="24">2 Years</option>
+                      <option value="36">3 Years</option>
+                    </select>
+                  </div>
                   <div><label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
                     <select value={formData.category_id} onChange={(e) => setFormData({...formData, category_id: e.target.value})} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
                       <option value="">Select Category</option>

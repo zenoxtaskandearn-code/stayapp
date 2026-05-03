@@ -25,7 +25,13 @@ const Register = () => {
     try {
       const res = await api.post('/auth/register', formData);
       login(res.data.user, res.data.token);
-      navigate('/');
+      const returnUrl = localStorage.getItem('returnToBooking');
+      if (returnUrl) {
+        localStorage.removeItem('returnToBooking');
+        navigate(returnUrl);
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
     } finally {

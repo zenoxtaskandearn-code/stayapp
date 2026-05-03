@@ -78,8 +78,14 @@ const Booking = () => {
       alert('Please agree to the Terms and Conditions');
       return;
     }
+    if (property?.min_rental_months && formData.months < property.min_rental_months) {
+      alert(`This property requires a minimum rental of ${property.min_rental_months} months`);
+      return;
+    }
     if (!user?.id) {
       alert('Please login to book a property');
+      localStorage.setItem('returnToBooking', `/booking/${id}?moveIn=${formData.moveIn}&months=${formData.months}`);
+      localStorage.setItem('pendingBooking', JSON.stringify({ propertyId: id, moveIn: formData.moveIn, months: formData.months }));
       navigate('/login');
       return;
     }
@@ -180,7 +186,11 @@ const Booking = () => {
                       <option value={2}>2 Months</option>
                       <option value={3}>3 Months</option>
                       <option value={6}>6 Months</option>
-                      <option value={12}>12 Months</option>
+                      <option value={12}>1 Year</option>
+                      <option value={24}>2 Years</option>
+                      <option value={36}>3 Years</option>
+                      <option value={48}>4 Years</option>
+                      <option value={60}>5 Years</option>
                     </select>
                   </div>
                 </div>
