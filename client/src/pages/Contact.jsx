@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
-import { FaPhone, FaEnvelope, FaWhatsApp } from 'react-icons/fa';
-import { FiMapPin } from 'react-icons/fi';
+import { FaPhone, FaEnvelope } from 'react-icons/fa';
+import { FiMapPin, FiPhone, FiMail } from 'react-icons/fi';
 
 const offices = [
   {
@@ -200,7 +200,7 @@ const Contact = () => {
               
               {office.whatsapp && (
                 <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
-                  <FaWhatsApp className="text-primary flex-shrink-0" size={12} />
+                  <FiPhone className="text-primary flex-shrink-0" size={14} />
                   <a href={`https://wa.me/${office.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
                     WhatsApp: {office.whatsapp}
                   </a>
