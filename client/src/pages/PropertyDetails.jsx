@@ -144,13 +144,10 @@ const PropertyDetails = () => {
               {property.payment_methods?.length > 0 && (
                 <div className="mt-8">
                   <h2 className="text-xl font-semibold mb-3">Accepted Payment Methods</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="flex flex-wrap gap-2">
                     {property.payment_methods.map((method) => (
-                      <div key={method.id} className="bg-gray-50 rounded-xl p-4">
-                        <div className="font-semibold text-gray-900">{method.name}</div>
-                        {method.instructions && (
-                          <div className="text-sm text-gray-600 mt-1" dangerouslySetInnerHTML={{ __html: method.instructions }} />
-                        )}
+                      <div key={method.id} className="bg-gray-50 rounded-lg px-3 py-2 text-sm">
+                        <span className="font-medium text-gray-900">{method.name}</span>
                       </div>
                     ))}
                   </div>
