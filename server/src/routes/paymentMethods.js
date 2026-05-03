@@ -1,34 +1,41 @@
 import { Router } from 'express';
-import { 
-  getPaymentMethods, 
-  getAllPaymentMethods, 
-  getPaymentMethodById, 
-  createPaymentMethod, 
-  updatePaymentMethod, 
-  deletePaymentMethod,
-  getPropertyPaymentMethods,
-  updatePropertyPaymentMethods 
-} from '../controllers/paymentMethodController.js';
+import { pool } from '../config/db.js';
 import { authenticate, authorize } from '../middleware/auth.js';
 
 const router = Router();
 
-// Public routes
-router.get('/', getPaymentMethods);
-router.get('/property/:propertyId', getPropertyPaymentMethods);
-router.get('/:id', getPaymentMethodById);
+// GET /admin - get all payment methods for admin
+router.get('/admin', async (req, res) => {
+  try {
+    const [methods] = await pool.query('SELECT * FROM payment_methods ORDER BY name');
+    res.json(methods);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
-// Admin routes - make these public too for now (can restrict later)
-router.get('/admin', getAllPaymentMethods);
-router.get('/admin/all', getAllPaymentMethods);
-router.get('/admin/list', getAllPaymentMethods);
+// GET / - get active payment methods (public)
+router.get('/', async (req, res) => {
+  try {
+    const [methods] = await pool.query('SELECT * FROM payment_methods WHERE is_active = TRUE ORDER BY name');
+    res.json(methods);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
-// Auth-protected admin routes
-const adminAuth = [authenticate, authorize('admin')];
-
-router.post('/admin', ...adminAuth, createPaymentMethod);
-router.put('/admin/:id', ...adminAuth, updatePaymentMethod);
-router.delete('/admin/:id', ...adminAuth, deletePaymentMethod);
-router.put('/property/:propertyId', ...adminAuth, updatePropertyPaymentMethods);
+// GET /:id - get single payment method
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [methods] = await pool.query('SELECT * FROM payment_methods WHERE id = ?', [id]);
+    if (!methods.length) {
+      return res.status(404).json({ message: 'Payment method not found' });
+    }
+    res.json(methods[0]);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 export default router;
