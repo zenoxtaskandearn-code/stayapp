@@ -81,18 +81,18 @@ const Payment = () => {
                      <button
                        key={method.id}
                        onClick={() => handleViewInstructions(method.id)}
-                       className="w-full bg-gray-900 hover:bg-gray-800 rounded-xl p-4 text-left flex items-center gap-3 transition-colors"
+                       className="w-full bg-primary/30 hover:bg-primary/40 rounded-xl p-4 text-left flex items-center gap-3 transition-colors"
                      >
                        <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                          <span className="text-white font-semibold text-sm">{method.name.charAt(0)}</span>
                        </div>
                        <div className="flex-1">
-                         <div className="font-medium text-white">{method.name}</div>
+                         <div className="font-medium text-gray-900">{method.name}</div>
                          {method.description && (
-                           <div className="text-xs text-gray-400 line-clamp-1">{method.description.replace(/<[^>]*>/g, '')}</div>
+                           <div className="text-xs text-gray-700 line-clamp-1">{method.description.replace(/<[^>]*>/g, '')}</div>
                          )}
                        </div>
-                       <span className="text-primary text-sm">→</span>
+                       <span className="text-primary text-lg">→</span>
                      </button>
                    ))}
                  </div>
