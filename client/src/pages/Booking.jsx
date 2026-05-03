@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaSpinner, FaMapMarkerAlt, FaCalendar } from 'react-icons/fa';
+import { FiInfo } from 'react-icons/fi';
 import { bookingService } from '../services/bookingService';
 import { propertyService } from '../services/propertyService';
 import { useAuthStore, useCurrencyStore } from '../store/useStore';
@@ -14,6 +15,7 @@ const Booking = () => {
   const { symbol, currency } = useCurrencyStore();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showPaymentDetails, setShowPaymentDetails] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [formData, setFormData] = useState({
@@ -225,6 +227,15 @@ const Booking = () => {
                     'Proceed to Payment'
                   )}
                 </button>
+                
+                <button
+                  type="button"
+                  onClick={() => setShowPaymentDetails(true)}
+                  className="w-full mt-3 px-4 py-3 border-2 border-gray-300 rounded-xl text-gray-700 font-medium hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
+                >
+                  <FiInfo className="w-4 h-4" />
+                  Show Payment Instructions
+                </button>
               </form>
             </motion.div>
           </div>
@@ -267,6 +278,54 @@ const Booking = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Payment Details Modal */}
+      {showPaymentDetails && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => setShowPaymentDetails(false)}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-2xl w-full max-w-lg max-h-[85vh] overflow-hidden shadow-2xl"
+          >
+            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+              <h2 className="text-xl font-bold text-gray-900">Payment Instructions</h2>
+              <button onClick={() => setShowPaymentDetails(false)} className="p-2 hover:bg-gray-100 rounded-xl">
+                ×
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto">
+              <div className="bg-primary/5 border border-primary/20 p-4 rounded-xl">
+                <h3 className="font-semibold text-gray-900 mb-2">Bank Transfer</h3>
+                <p className="text-sm text-gray-600 mb-2">Please transfer the total amount to the following account:</p>
+                <div className="text-sm text-gray-700 space-y-1">
+                  <p><strong>Account Name:</strong> The Blueground</p>
+                  <p><strong>Account Number:</strong> 12345678</p>
+                  <p><strong>Sort Code:</strong> 00-00-00</p>
+                  <p><strong>Reference:</strong> BOOK{property?.id}</p>
+                </div>
+              </div>
+              <p className="text-xs text-gray-500 mt-4">
+                Payment will be verified within 24-48 hours after transfer.
+              </p>
+            </div>
+            <div className="p-4 border-t border-gray-100">
+              <button
+                onClick={() => setShowPaymentDetails(false)}
+                className="w-full py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary-dark"
+              >
+                Close
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 };
