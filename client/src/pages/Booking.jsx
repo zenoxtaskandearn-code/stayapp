@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaSpinner, FaMapMarkerAlt, FaCalendar } from 'react-icons/fa';
-import { FiInfo } from 'react-icons/fi';
 import { bookingService } from '../services/bookingService';
 import { propertyService } from '../services/propertyService';
 import { useAuthStore, useCurrencyStore } from '../store/useStore';
@@ -226,15 +225,6 @@ const Booking = () => {
                   ) : (
                     'Proceed to Payment'
                   )}
-                </button>
-                
-                <button
-                  type="button"
-                  onClick={() => setShowPaymentDetails(true)}
-                  className="w-full mt-3 px-4 py-3 border-2 border-gray-300 rounded-xl text-gray-700 font-medium hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
-                >
-                  <FiInfo className="w-4 h-4" />
-                  Show Payment Instructions
                 </button>
               </form>
             </motion.div>

@@ -199,6 +199,14 @@ export const updateBookingStatus = async (req, res) => {
     );
 
     if (rows.length > 0) {
+      // If booking is approved or confirmed, mark property as unavailable and store booking period
+      if (status === 'approved' || status === 'confirmed') {
+        await pool.query(
+          `UPDATE properties SET status = 'booked', unavailable_dates = ? WHERE id = ?`,
+          [JSON.stringify({ booking_id: id, move_in: rows[0].move_in_date, months: rows[0].months }), rows[0].property_id]
+        );
+      }
+      
       // Get user email
       const [users] = await pool.query('SELECT email, name FROM users WHERE id = ?', [rows[0].user_id]);
       const [settings] = await pool.query('SELECT * FROM settings LIMIT 1');

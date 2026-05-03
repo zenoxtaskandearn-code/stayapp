@@ -49,6 +49,7 @@ const syncDatabase = async () => {
     await addColumnIfMissing('properties', 'map_link', 'TEXT AFTER location');
     await addColumnIfMissing('properties', 'deposit', 'DECIMAL(10,2) DEFAULT 0 AFTER monthly_price');
     await addColumnIfMissing('properties', 'min_rental_months', 'INT DEFAULT 0 AFTER deposit');
+    await addColumnIfMissing('properties', 'unavailable_dates', 'TEXT AFTER status');
 
     await addColumnIfMissing('bookings', 'currency', "VARCHAR(3) DEFAULT 'USD' AFTER total_amount");
 
