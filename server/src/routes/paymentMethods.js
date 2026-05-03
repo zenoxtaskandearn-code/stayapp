@@ -16,6 +16,7 @@ const router = Router();
 // Public routes
 router.get('/', getPaymentMethods);
 router.get('/property/:propertyId', getPropertyPaymentMethods);
+router.get('/:id', getPaymentMethodById);
 
 // Admin routes
 const adminAuth = [authenticate, authorize('admin')];
