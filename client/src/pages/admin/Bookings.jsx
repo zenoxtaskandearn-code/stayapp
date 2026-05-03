@@ -198,16 +198,19 @@ const AdminBookings = () => {
 
                     {/* Actions */}
                     <div className="flex gap-2">
+                      <button onClick={() => setSelectedBooking(booking)} className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-primary-light text-primary rounded-xl hover:bg-primary/20 font-medium text-sm">
+                        <FiEdit size={16} /> Edit
+                      </button>
                       {booking.payment_screenshot && (
-                        <button onClick={() => setSelectedBooking(booking)} className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-primary-light text-primary rounded-xl hover:bg-primary/20 font-medium text-sm">
-                          <FiImage size={16} /> View Payment
+                        <button onClick={() => setSelectedBooking(booking)} className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-secondary text-white rounded-xl hover:bg-secondary-dark font-medium text-sm">
+                          <FiImage size={16} /> Payment
                         </button>
                       )}
                       {booking.booking_status === 'pending' && (
                         <>
-                          <button onClick={() => handleStatusUpdate(booking.id, 'approved')} disabled={updatingId === booking.id} className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 font-medium text-sm disabled:opacity-60 disabled:cursor-not-allowed">
+                          <button onClick={() => handleStatusUpdate(booking.id, 'confirmed')} disabled={updatingId === booking.id} className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 font-medium text-sm disabled:opacity-60 disabled:cursor-not-allowed">
                             {updatingId === booking.id ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <FiCheck size={16} />}
-                            {updatingId === booking.id ? 'Processing...' : 'Approve'}
+                            {updatingId === booking.id ? '...' : 'Approve'}
                           </button>
                           <button onClick={() => handleStatusUpdate(booking.id, 'rejected')} disabled={updatingId === booking.id} className="px-4 py-2.5 bg-primary-light text-primary rounded-xl hover:bg-primary/20 disabled:opacity-60 disabled:cursor-not-allowed">
                             {updatingId === booking.id ? <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" /> : <FiX size={16} />}
