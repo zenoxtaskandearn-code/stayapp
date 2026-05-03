@@ -1,0 +1,13 @@
+Bank Transfer - Secure Direct Payment
+
+<h3 style="color: #1f2937; margin: 0 0 12px 0; font-size: 18px;">Bank Transfer</h3>
+<p style="color: #6b7280; margin: 0 0 16px 0; font-size: 14px;">Fast and secure bank transfer directly to our account. No credit card needed.</p>
+
+<div style="background: #f3f4f6; border-radius: 8px; padding: 16px; margin: 16px 0;">
+  <p style="margin: 0 0 8px 0; font-size: 14px;"><strong style="color: #374151;">Account Name:</strong> <span style="color: #4979a4;">The Blueground</span></p>
+  <p style="margin: 0 0 8px 0; font-size: 14px;"><strong style="color: #374151;">Account Number:</strong> <span style="color: #4979a4;">12345678</span></p>
+  <p style="margin: 0 0 8px 0; font-size: 14px;"><strong style="color: #374151;">Sort Code:</strong> <span style="color: #4979a4;">00-00-00</span></p>
+  <p style="margin: 0; font-size: 14px;"><strong style="color: #374151;">Reference:</strong> <span style="color: #4979a4; font-weight: bold;">BOOK[BOOKING_ID]</span></p>
+</div>
+
+<p style="color: #6b7280; font-size: 13px; margin: 0;">💡 Use your booking ID as reference for easy tracking</p>

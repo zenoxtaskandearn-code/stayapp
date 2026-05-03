@@ -21,6 +21,7 @@ router.get('/property/:propertyId', getPropertyPaymentMethods);
 const adminAuth = [authenticate, authorize('admin')];
 
 router.get('/admin', ...adminAuth, getAllPaymentMethods);
+router.get('/admin/:id', ...adminAuth, getPaymentMethodById);
 router.post('/admin', ...adminAuth, createPaymentMethod);
 router.put('/admin/:id', ...adminAuth, updatePaymentMethod);
 router.delete('/admin/:id', ...adminAuth, deletePaymentMethod);

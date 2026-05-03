@@ -19,6 +19,7 @@ import Contact from './pages/Contact';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
 import FAQ from './pages/FAQ';
+import PaymentInstructions from './pages/PaymentInstructions';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminProperties from './pages/admin/Properties';
 import AdminBookings from './pages/admin/Bookings';
@@ -72,6 +73,7 @@ function AppContent() {
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/faq" element={<FAQ />} />
+            <Route path="/payment-instructions/:methodId" element={<PaymentInstructions />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="properties" element={<AdminProperties />} />

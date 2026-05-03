@@ -62,25 +62,25 @@ const Payment = () => {
                 </div>
               </div>
 
-              <h3 className="text-lg font-semibold mb-4">Payment Instructions</h3>
-              
+<h3 className="text-lg font-semibold mb-4">Payment Instructions</h3>
+               
               {booking.payment_methods?.length > 0 && (
                 <div className="mb-6">
                   <h4 className="text-sm font-medium text-gray-500 mb-3">Available Payment Methods</h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 gap-3">
                     {booking.payment_methods.map((method) => (
-                      <div key={method.id} className="p-4 bg-primary/5 border border-primary/20 rounded-xl">
-                        <div className="flex items-center gap-2 mb-2">
+                      <a
+                        key={method.id}
+                        href={`/payment-instructions/${method.id}`}
+                        target="_blank"
+                        className="flex items-center justify-between p-4 bg-primary/5 border border-primary/20 rounded-xl hover:bg-primary/10 transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
                           <FiCreditCard className="text-primary" />
                           <h5 className="font-medium text-gray-900">{method.name}</h5>
                         </div>
-                        {method.description && (
-                          <p className="text-xs text-gray-500" dangerouslySetInnerHTML={{ __html: method.description }} />
-                        )}
-                        {method.instructions && (
-                          <div className="mt-2 text-sm text-gray-700" dangerouslySetInnerHTML={{ __html: method.instructions }} />
-                        )}
-                      </div>
+                        <span className="text-primary text-sm font-medium">View Instructions →</span>
+                      </a>
                     ))}
                   </div>
                 </div>

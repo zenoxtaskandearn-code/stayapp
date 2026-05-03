@@ -1,0 +1,79 @@
+===== DESCRIPTION FIELD =====
+
+<h3 style="color: #111827; margin: 0 0 8px 0; font-size: 20px; font-weight: 600;">Bank Transfer</h3>
+<p style="color: #6b7280; margin: 0 0 20px 0; font-size: 14px; line-height: 1.6;">Secure direct bank transfer. Fast verification and instant confirmation.</p>
+
+<div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin: 0;">
+<p style="color: #0f172a; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 16px 0; opacity: 0.7;">Account Details</p>
+
+<div style="display: grid; gap: 12px;">
+<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0;">
+<span style="color: #64748b; font-size: 13px;">Account Name</span>
+<span style="color: #0f172a; font-size: 14px; font-weight: 600;">The Blueground</span>
+</div>
+
+<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0;">
+<span style="color: #64748b; font-size: 13px;">Account Number</span>
+<span style="color: #0f172a; font-size: 14px; font-weight: 600;">12345678</span>
+</div>
+
+<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0;">
+<span style="color: #64748b; font-size: 13px;">Sort Code</span>
+<span style="color: #0f172a; font-size: 14px; font-weight: 600;">00-00-00</span>
+</div>
+
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<span style="color: #64748b; font-size: 13px;">Reference</span>
+<span style="color: #4979a4; font-size: 14px; font-weight: 700; background: #e0f2fe; padding: 4px 10px; border-radius: 6px;">BOOK[BOOKING_ID]</span>
+</div>
+</div>
+</div>
+
+<div style="margin-top: 16px; padding: 12px 16px; background: #fefce8; border-radius: 8px; border-left: 3px solid #eab308;">
+<p style="color: #854d0e; font-size: 13px; margin: 0;">💡 Always use your booking ID as reference for fast verification</p>
+</div>
+
+
+===== INSTRUCTIONS FIELD =====
+
+<div style="font-family: system-ui, -apple-system, sans-serif;">
+
+<p style="color: #111827; font-size: 16px; font-weight: 600; margin: 0 0 20px 0;">How to Transfer</p>
+
+<ol style="color: #374151; font-size: 14px; padding-left: 24px; margin: 0 0 24px 0; line-height: 2;">
+<li style="margin-bottom: 16px; padding: 16px; background: #f8fafc; border-radius: 8px;">
+<strong style="color: #0f172a;">Log into your bank</strong>
+<p style="color: #64748b; margin: 4px 0 0 0; font-size: 13px;">Use your online or mobile banking app</p>
+</li>
+
+<li style="margin-bottom: 16px; padding: 16px; background: #f8fafc; border-radius: 8px;">
+<strong style="color: #0f172a;">Select Pay or Transfer</strong>
+<p style="color: #64748b; margin: 4px 0 0 0; font-size: 13px;">Choose the bank transfer option</p>
+</li>
+
+<li style="margin-bottom: 16px; padding: 16px; background: #f8fafc; border-radius: 8px;">
+<strong style="color: #0f172a;">Enter Account Details</strong>
+<p style="color: #64748b; margin: 4px 0 0 0; font-size: 13px;">Use the account info from description above</p>
+</li>
+
+<li style="margin-bottom: 16px; padding: 16px; background: #f8fafc; border-radius: 8px;">
+<strong style="color: #0f172a;">Add Your Reference</strong>
+<p style="color: #64748b; margin: 4px 0 0 0; font-size: 13px;">Use <strong style="color: #4979a4;">BOOK[YOUR_BOOKING_ID]</strong> as reference</p>
+</li>
+
+<li style="margin-bottom: 0; padding: 16px; background: #f8fafc; border-radius: 8px;">
+<strong style="color: #0f172a;">Confirm & Send</strong>
+<p style="color: #64748b; margin: 4px 0 0 0; font-size: 13px;">Review and confirm the transfer</p>
+</li>
+</ol>
+
+<div style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 1px solid #10b981; border-radius: 12px; padding: 20px; margin: 24px 0; text-align: center;">
+<p style="color: #065f46; font-size: 15px; font-weight: 600; margin: 0;">✓ Payment Verified Within 24-48 Hours</p>
+</div>
+
+<div style="text-align: center; padding-top: 16px; border-top: 1px solid #e2e8f0;">
+<p style="color: #64748b; font-size: 13px; margin: 0 0 8px 0;">Need assistance?</p>
+<p style="color: #4979a4; font-size: 14px; margin: 0;">📧 info@estate-theblueground.co.uk</p>
+</div>
+
+</div>

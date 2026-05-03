@@ -1,0 +1,92 @@
+=== REMITLY - DESCRIPTION ===
+
+<h3 style="font-size: 20px; font-weight: 600; color: #111827; margin: 0 0 8px 0;">Pay via Card (Remitly)</h3>
+<p style="color: #64748b; font-size: 14px; margin: 0 0 20px 0; line-height: 1.6;">Secure card payment through Remitly. Fast and reliable money transfer.</p>
+
+<div style="background: linear-gradient(135deg, #f8fafc, #f1f5f9); border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin: 0;">
+<p style="color: #0f172a; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 16px 0; opacity: 0.7;">Recipient Bank Details</p>
+
+<div style="display: grid; gap: 12px;">
+<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0;">
+<span style="color: #64748b; font-size: 13px;">Account Holder</span>
+<span style="color: #0f172a; font-size: 14px; font-weight: 600;">Zaira Lopez PEREZ</span>
+</div>
+
+<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0;">
+<span style="color: #64748b; font-size: 13px;">Bank Name</span>
+<span style="color: #0f172a; font-size: 14px; font-weight: 600;">BBVA Bank</span>
+</div>
+
+<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0;">
+<span style="color: #64748b; font-size: 13px;">IBAN</span>
+<span style="color: #0f172a; font-size: 13px; font-weight: 600; word-break: break-all;">ES29 0182 5332 1800 0108 3292</span>
+</div>
+
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<span style="color: #64748b; font-size: 13px;">SWIFT/BIC</span>
+<span style="color: #0f172a; font-size: 14px; font-weight: 600;">BBVAESMMXXX</span>
+</div>
+</div>
+</div>
+
+<div style="margin-top: 16px; padding: 12px 16px; background: #fefce8; border-radius: 8px; border-left: 3px solid #eab308;">
+<p style="color: #854d0e; font-size: 12px; margin: 0;">Use your booking ID as reference for fast verification</p>
+</div>
+
+
+=== REMITLY - INSTRUCTIONS ===
+
+<div style="font-family: system-ui, -apple-system, sans-serif;">
+<p style="font-size: 16px; font-weight: 600; color: #111827; margin: 0 0 20px 0;">How to Pay via Remitly</p>
+
+<ol style="color: #374151; font-size: 14px; padding-left: 24px; margin: 0 0 24px 0; line-height: 2;">
+<li style="margin-bottom: 16px; padding: 16px; background: #f8fafc; border-radius: 8px;">
+<strong style="color: #0f172a;">Download / Open Remitly</strong>
+<p style="color: #64748b; margin: 4px 0 0 0; font-size: 13px;">Get the app from App Store (iPhone) or Google Play Store (Android), or visit www.remitly.com</p>
+</li>
+
+<li style="margin-bottom: 16px; padding: 16px; background: #f8fafc; border-radius: 8px;">
+<strong style="color: #0f172a;">Set Destination</strong>
+<p style="color: #64748b; margin: 4px 0 0 0; font-size: 13px;">Select Spain as the receiving country</p>
+</li>
+
+<li style="margin-bottom: 16px; padding: 16px; background: #f8fafc; border-radius: 8px;">
+<strong style="color: #0f172a;">Enter Amount</strong>
+<p style="color: #64748b; margin: 4px 0 0 0; font-size: 13px;">Enter the total amount for your booking and check the exchange rate</p>
+</li>
+
+<li style="margin-bottom: 16px; padding: 16px; background: #f8fafc; border-radius: 8px;">
+<strong style="color: #0f172a;">Delivery Method</strong>
+<p style="color: #64748b; margin: 4px 0 0 0; font-size: 13px;">Choose Bank Deposit option</p>
+</li>
+
+<li style="margin-bottom: 16px; padding: 16px; background: #f8fafc; border-radius: 8px;">
+<strong style="color: #0f172a;">Recipient Details</strong>
+<p style="color: #64748b; margin: 4px 0 0 0; font-size: 13px;">Enter the bank details shown in the description above</p>
+</li>
+
+<li style="margin-bottom: 16px; padding: 16px; background: #f8fafc; border-radius: 8px;">
+<strong style="color: #0f172a;">Payment Method</strong>
+<p style="color: #64748b; margin: 4px 0 0 0; font-size: 13px;">Choose Debit/Credit Card, Apple Pay, or Google Pay</p>
+</li>
+
+<li style="margin-bottom: 16px; padding: 16px; background: #f8fafc; border-radius: 8px;">
+<strong style="color: #0f172a;">Confirm and Send</strong>
+<p style="color: #64748b; margin: 4px 0 0 0; font-size: 13px;">Review all details and click Send Money</p>
+</li>
+
+<li style="margin-bottom: 0; padding: 16px; background: #fef3c7; border-radius: 8px; border-left: 3px solid #f59e0b;">
+<strong style="color: #92400e;">Send Proof of Payment</strong>
+<p style="color: #92400e; margin: 4px 0 0 0; font-size: 13px;">After completing the transfer, send us the payment confirmation or screenshot</p>
+</li>
+</ol>
+
+<div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 1px solid #10b981; border-radius: 12px; padding: 20px; margin: 24px 0; text-align: center;">
+<p style="color: #065f46; font-size: 14px; font-weight: 600; margin: 0;">Verified Within 12-24 Hours</p>
+</div>
+
+<div style="text-align: center; padding-top: 16px; border-top: 1px solid #e2e8f0;">
+<p style="color: #64748b; font-size: 12px; margin: 0 0 4px 0;">Need assistance?</p>
+<p style="color: #4979a4; font-size: 13px; margin: 0;">info@estate-theblueground.co.uk</p>
+</div>
+</div>

@@ -1,0 +1,25 @@
+--- DESCRIPTION FIELD ---
+<h3 style="color: #1f2937; margin: 0 0 12px 0; font-size: 18px;">Bank Transfer</h3>
+<p style="color: #6b7280; margin: 0 0 16px 0; font-size: 14px;">Fast and secure bank transfer directly to our account. No credit card needed.</p>
+<div style="background: #f3f4f6; border-radius: 8px; padding: 16px; margin: 16px 0;">
+<p style="margin: 0 0 8px 0; font-size: 14px;"><strong style="color: #374151;">Account Name:</strong> <span style="color: #4979a4;">The Blueground</span></p>
+<p style="margin: 0 0 8px 0; font-size: 14px;"><strong style="color: #374151;">Account Number:</strong> <span style="color: #4979a4;">12345678</span></p>
+<p style="margin: 0 0 8px 0; font-size: 14px;"><strong style="color: #374151;">Sort Code:</strong> <span style="color: #4979a4;">00-00-00</span></p>
+<p style="margin: 0; font-size: 14px;"><strong style="color: #374151;">Reference:</strong> <span style="color: #4979a4; font-weight: bold;">BOOK[BOOKING_ID]</span></p>
+</div>
+<p style="color: #6b7280; font-size: 13px; margin: 0;">Use your booking ID as reference for easy tracking</p>
+
+--- INSTRUCTIONS FIELD ---
+<p style="color: #1f2937; margin: 0 0 16px 0; font-size: 15px;"><strong>Step-by-Step Bank Transfer Instructions:</strong></p>
+<ol style="color: #374151; font-size: 14px; padding-left: 20px; line-height: 1.8;">
+<li style="margin-bottom: 8px;">Log in to your online banking or mobile banking app</li>
+<li style="margin-bottom: 8px;">Select "Pay or Transfer" option</li>
+<li style="margin-bottom: 8px;">Enter our account details (shown above)</li>
+<li style="margin-bottom: 8px;">Use your <strong style="color: #4979a4;">booking ID</strong> as payment reference</li>
+<li style="margin-bottom: 8px;">Confirm and complete the transfer</li>
+<li style="margin-bottom: 0;">Take a screenshot of the confirmation for your records</li>
+</ol>
+<div style="background: #ecfdf5; border: 1px solid #10b981; border-radius: 8px; padding: 12px; margin-top: 16px;">
+<p style="color: #065f46; font-size: 13px; margin: 0;"><strong>✅ Payment will be verified within 24-48 hours</strong></p>
+</div>
+<p style="color: #6b7280; font-size: 12px; margin: 12px 0 0 0;">Need help? Contact us at info@estate-theblueground.co.uk</p>
