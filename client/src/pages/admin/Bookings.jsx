@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiCheck, FiX, FiCalendar, FiDollarSign, FiUser, FiHome, FiPhone, FiMail, FiImage, FiSearch, FiFilter, FiMoreVertical, FiMapPin, FiClock, FiEdit } from 'react-icons/fi';
+import { FiCheck, FiX, FiCalendar, FiDollarSign, FiUser, FiHome, FiPhone, FiMail, FiImage, FiSearch, FiFilter, FiMoreVertical, FiMapPin, FiClock, FiEdit, FiSave } from 'react-icons/fi';
 import { bookingService } from '../../services/bookingService';
 import Loader from '../../components/Loader';
 
@@ -24,7 +24,9 @@ const AdminBookings = () => {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [updatingId, setUpdatingId] = useState(null);
   const [editingDate, setEditingDate] = useState(false);
+  const [editingBooking, setEditingBooking] = useState(false);
   const [newMoveInDate, setNewMoveInDate] = useState('');
+  const [editForm, setEditForm] = useState({ move_in_date: '', months: 0 });
 
   const getCurrencySymbol = (currency) => {
     const symbols = { USD: '$', GBP: '£', EUR: '€' };
@@ -274,6 +276,43 @@ const AdminBookings = () => {
                 <div className="bg-gray-50 rounded-xl p-3 text-center"><div className="text-xs text-gray-500">Duration</div><div className="font-semibold text-sm">{selectedBooking.months} mo</div></div>
                 <div className="bg-gray-50 rounded-xl p-3 text-center"><div className="text-xs text-gray-500">Amount</div><div className="font-semibold text-sm text-primary">{formatPrice(selectedBooking.total_amount, selectedBooking.currency)}</div></div>
               </div>
+
+              {/* Full Edit Button */}
+              <button 
+                onClick={() => { setEditForm({ move_in_date: selectedBooking.move_in_date?.split('T')[0], months: selectedBooking.months }); setEditingBooking(true); }}
+                className="w-full py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 font-medium flex items-center justify-center gap-2 mb-4"
+              >
+                <FiEdit size={16} /> Edit Booking
+              </button>
+
+              {/* Full Edit Form */}
+              {editingBooking && (
+                <div className="bg-gray-50 rounded-xl p-4 mb-4 space-y-3">
+                  <h4 className="font-semibold text-gray-900">Edit Booking Details</h4>
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-1">Move-in Date</label>
+                    <input type="date" value={editForm.move_in_date} onChange={(e) => setEditForm({...editForm, move_in_date: e.target.value})} className="w-full px-3 py-2 border rounded-lg" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-1">Duration</label>
+                    <select value={editForm.months} onChange={(e) => setEditForm({...editForm, months: parseInt(e.target.value)})} className="w-full px-3 py-2 border rounded-lg">
+                      <option value={1}>1 Month</option>
+                      <option value={2}>2 Months</option>
+                      <option value={3}>3 Months</option>
+                      <option value={4}>4 Months</option>
+                      <option value={5}>5 Months</option>
+                      <option value={6}>6 Months</option>
+                      <option value={12}>1 Year</option>
+                      <option value={24}>2 Years</option>
+                      <option value={36}>3 Years</option>
+                    </select>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={async () => { try { await bookingService.updateBooking(selectedBooking.id, editForm); setSelectedBooking({ ...selectedBooking, ...editForm }); setEditingBooking(false); alert('Booking updated!'); } catch (error) { alert('Error updating'); }}} className="flex-1 py-2 bg-green-600 text-white rounded-lg font-medium">Save</button>
+                    <button onClick={() => setEditingBooking(false)} className="flex-1 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium">Cancel</button>
+                  </div>
+                </div>
+              )}
 
               {editingDate && (
                 <div className="flex gap-2 mb-4">
