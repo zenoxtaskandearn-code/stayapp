@@ -10,7 +10,7 @@ export const getProperties = async (req, res) => {
       bathrooms,
       propertyType,
       furnished,
-      status = 'available',
+      status = 'available', // default to available for public
       page = 1,
       limit = 12,
       sort = 'created_at',
@@ -23,9 +23,17 @@ export const getProperties = async (req, res) => {
       (SELECT GROUP_CONCAT(payment_method_id) FROM property_payment_methods WHERE property_id = p.id) as payment_method_ids
       FROM properties p
       LEFT JOIN categories c ON p.category_id = c.id
-      WHERE p.status = ?
     `;
-    const params = [status];
+    
+    const params = [];
+    
+    // Add WHERE clause based on status
+    // If status is 'all' or not provided, show all (admin)
+    // Otherwise filter by status (public)
+    if (status && status !== 'all') {
+      query += ' WHERE p.status = ?';
+      params.push(status);
+    }
 
     if (location) {
       query += ' AND p.location LIKE ?';
@@ -68,8 +76,11 @@ export const getProperties = async (req, res) => {
 
     const [properties] = await pool.query(query, params);
 
-    const countQuery = 'SELECT COUNT(*) as total FROM properties WHERE status = ?';
-    const [countResult] = await pool.query(countQuery, [status]);
+    const countQuery = status && status !== 'all' 
+      ? 'SELECT COUNT(*) as total FROM properties WHERE status = ?'
+      : 'SELECT COUNT(*) as total FROM properties';
+    const countParams = status && status !== 'all' ? [status] : [];
+    const [countResult] = await pool.query(countQuery, countParams);
 
     const formattedProperties = properties.map((p) => {
       let amenities = [];
@@ -291,8 +302,29 @@ export const updateProperty = async (req, res) => {
 export const deleteProperty = async (req, res) => {
   try {
     const { id } = req.params;
-    await pool.query('DELETE FROM properties WHERE id = ?', [id]);
-    res.json({ message: 'Property deleted successfully' });
+    
+    // Get property details first to check for redirect URL
+    const [property] = await pool.query('SELECT * FROM properties WHERE id = ?', [id]);
+    
+    if (property.length > 0) {
+      // Get settings for redirect URL
+      const [settings] = await pool.query('SELECT * FROM settings LIMIT 1');
+      const redirectUrl = property[0].map_link || settings[0]?.contact_url;
+      
+      // Delete the property
+      await pool.query('DELETE FROM property_images WHERE property_id = ?', [id]);
+      await pool.query('DELETE FROM property_payment_methods WHERE property_id = ?', [id]);
+      await pool.query('DELETE FROM bookings WHERE property_id = ?', [id]);
+      await pool.query('DELETE FROM properties WHERE id = ?', [id]);
+      
+      // If there's a redirect URL, return it so frontend can redirect
+      res.json({ 
+        message: 'Property deleted successfully',
+        redirectUrl: redirectUrl || null
+      });
+    } else {
+      res.status(404).json({ message: 'Property not found' });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -41,7 +41,8 @@ const AdminProperties = () => {
 
   const fetchProperties = async () => {
     try {
-      const res = await propertyService.getProperties();
+      // Admin should see all properties (including booked), not just available
+      const res = await propertyService.getProperties({ status: 'all' });
       const data = res.data;
       setProperties(Array.isArray(data) ? data : (data.properties || []));
     } catch (error) {
@@ -72,8 +73,13 @@ const AdminProperties = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this property?')) {
       try {
-        await propertyService.deleteProperty(id);
-        fetchProperties();
+        const res = await propertyService.deleteProperty(id);
+        // If there's a redirect URL from server, redirect user
+        if (res.data?.redirectUrl) {
+          window.location.href = res.data.redirectUrl;
+        } else {
+          fetchProperties();
+        }
       } catch (error) {
         console.error('Error deleting property:', error);
       }
