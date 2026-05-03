@@ -338,17 +338,22 @@ title: '', location: '', description: '', map_link: '', monthly_price: '', depos
                     </div>
                   </div>
                     <div><label className="block text-sm font-medium text-gray-700 mb-1">Security Deposit</label><input type="number" value={formData.deposit} onChange={(e) => setFormData({...formData, deposit: e.target.value})} placeholder="One-time deposit" className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" /></div>
-                  <div><label className="block text-sm font-medium text-gray-700 mb-1">Min Rental Months</label>
-                    <select value={formData.min_rental_months || ''} onChange={(e) => setFormData({...formData, min_rental_months: e.target.value})} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
-                      <option value="">No minimum</option>
-                      <option value="1">1 Month</option>
-                      <option value="3">3 Months</option>
-                      <option value="6">6 Months</option>
-                      <option value="12">1 Year</option>
-                      <option value="24">2 Years</option>
-                      <option value="36">3 Years</option>
-                    </select>
-                  </div>
+<div><label className="block text-sm font-medium text-gray-700 mb-1">Min Rental Months</label>
+                      <select value={formData.min_rental_months || ''} onChange={(e) => setFormData({...formData, min_rental_months: e.target.value})} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+                        <option value="">No minimum</option>
+                        <option value="1">1 Month</option>
+                        <option value="2">2 Months</option>
+                        <option value="3">3 Months</option>
+                        <option value="4">4 Months</option>
+                        <option value="5">5 Months</option>
+                        <option value="6">6 Months</option>
+                        <option value="12">1 Year</option>
+                        <option value="24">2 Years</option>
+                        <option value="36">3 Years</option>
+                        <option value="48">4 Years</option>
+                        <option value="60">5 Years</option>
+                      </select>
+                    </div>
                   <div><label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
                     <select value={formData.category_id} onChange={(e) => setFormData({...formData, category_id: e.target.value})} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
                       <option value="">Select Category</option>
@@ -398,7 +403,14 @@ title: '', location: '', description: '', map_link: '', monthly_price: '', depos
               {/* Description */}
               <div>
                 <h3 className="font-semibold text-gray-900 mb-4">Description</h3>
-                <textarea value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} rows={4} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" placeholder="Describe your property..." />
+                <p className="text-xs text-gray-500 mb-2">Supports HTML formatting</p>
+                <div
+                  contentEditable
+                  suppressContentEditableWarning
+                  onBlur={(e) => setFormData({...formData, description: e.currentTarget.innerHTML})}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none min-h-[120px] prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: formData.description }}
+                />
               </div>
 
               {/* Payment Methods */}

@@ -221,8 +221,14 @@ const PropertyDetails = () => {
                     <option value={1}>1 Month</option>
                     <option value={2}>2 Months</option>
                     <option value={3}>3 Months</option>
+                    <option value={4}>4 Months</option>
+                    <option value={5}>5 Months</option>
                     <option value={6}>6 Months</option>
                     <option value={12}>1 Year</option>
+                    <option value={24}>2 Years</option>
+                    <option value={36}>3 Years</option>
+                    <option value={48}>4 Years</option>
+                    <option value={60}>5 Years</option>
                   </select>
                 </div>
               </div>
