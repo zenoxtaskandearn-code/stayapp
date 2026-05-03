@@ -17,18 +17,27 @@ const Register = () => {
   const [otp, setOtp] = useState('');
   const [userEmail, setUserEmail] = useState('');
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-
+ 
     try {
       const res = await api.post('/auth/register', formData);
       login(res.data.user, res.data.token);
+      
+      // Check for pending booking and redirect back
       const returnUrl = localStorage.getItem('returnToBooking');
+      const pendingBooking = localStorage.getItem('pendingBooking');
+      
       if (returnUrl) {
         localStorage.removeItem('returnToBooking');
+        localStorage.removeItem('pendingBooking');
         navigate(returnUrl);
+      } else if (pendingBooking) {
+        localStorage.removeItem('pendingBooking');
+        const pb = JSON.parse(pendingBooking);
+        navigate(`/booking/${pb.propertyId}?moveIn=${pb.moveIn}&months=${pb.months}`);
       } else {
         navigate('/');
       }
@@ -47,7 +56,22 @@ const Register = () => {
     try {
       const res = await api.post('/auth/verify-email', { email: userEmail, otp });
       login(res.data.user, res.data.token);
-      navigate('/');
+      
+      // Check for pending booking and redirect back
+      const returnUrl = localStorage.getItem('returnToBooking');
+      const pendingBooking = localStorage.getItem('pendingBooking');
+      
+      if (returnUrl) {
+        localStorage.removeItem('returnToBooking');
+        localStorage.removeItem('pendingBooking');
+        navigate(returnUrl);
+      } else if (pendingBooking) {
+        localStorage.removeItem('pendingBooking');
+        const pb = JSON.parse(pendingBooking);
+        navigate(`/booking/${pb.propertyId}?moveIn=${pb.moveIn}&months=${pb.months}`);
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Verification failed');
     } finally {

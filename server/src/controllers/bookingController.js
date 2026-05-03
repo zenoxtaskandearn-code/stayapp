@@ -201,12 +201,20 @@ export const updateBookingStatus = async (req, res) => {
     );
 
     if (rows.length > 0) {
-      // If booking is approved or confirmed, mark property as unavailable and store booking period
-      if (status === 'approved' || status === 'confirmed') {
+      // If booking is approved, confirmed, or paid - mark property as booked and store the booking period
+      if (status === 'approved' || status === 'confirmed' || status === 'completed') {
+        const bookingPeriod = JSON.stringify({ 
+          booking_id: id, 
+          move_in: rows[0].move_in_date, 
+          months: rows[0].months,
+          move_out: rows[0].move_out_date,
+          updated_at: new Date().toISOString()
+        });
         await pool.query(
           `UPDATE properties SET status = 'booked', unavailable_dates = ? WHERE id = ?`,
-          [JSON.stringify({ booking_id: id, move_in: rows[0].move_in_date, months: rows[0].months }), rows[0].property_id]
+          [bookingPeriod, rows[0].property_id]
         );
+        console.log('[bookingController] Property marked as booked for booking:', id);
       }
       
       // Get user email

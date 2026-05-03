@@ -62,7 +62,7 @@ export const verifyPayment = async (req, res) => {
     if (status === 'verified') {
       // Get booking and property info first
       const [bookings] = await pool.query(
-        `SELECT b.property_id, b.move_in_date, b.months FROM bookings b 
+        `SELECT b.id, b.property_id, b.move_in_date, b.months, b.move_out_date FROM bookings b 
          JOIN payments p ON p.booking_id = b.id WHERE p.id = ?`,
         [id]
       );
@@ -73,11 +73,19 @@ export const verifyPayment = async (req, res) => {
           [id]
         );
         
-        // Mark property as booked with unavailable dates
+        // Mark property as booked with full booking period
+        const bookingPeriod = JSON.stringify({ 
+          booking_id: bookings[0].id, 
+          move_in: bookings[0].move_in_date, 
+          months: bookings[0].months,
+          move_out: bookings[0].move_out_date,
+          updated_at: new Date().toISOString()
+        });
         await pool.query(
           `UPDATE properties SET status = 'booked', unavailable_dates = ? WHERE id = ?`,
-          [JSON.stringify({ booking_id: bookings[0].booking_id, move_in: bookings[0].move_in_date, months: bookings[0].months }), bookings[0].property_id]
+          [bookingPeriod, bookings[0].property_id]
         );
+        console.log('[paymentController] Property marked as booked via payment verification for booking:', bookings[0].id);
       }
     }
 
