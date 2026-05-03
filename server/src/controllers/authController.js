@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { pool } from '../config/db.js';
 import { generateOTP, sendOTPEmail, sendResetLink, sendBookingConfirmation } from '../services/emailService.js';
