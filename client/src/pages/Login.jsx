@@ -23,17 +23,20 @@ const Login = () => {
       const res = await authService.login(formData);
       login(res.data.user, res.data.token);
       
-      const returnUrl = localStorage.getItem('returnToBooking');
+      // Get pending booking info
       const pendingBooking = localStorage.getItem('pendingBooking');
+      const returnUrl = localStorage.getItem('returnToBooking');
       
-      if (returnUrl) {
-        localStorage.removeItem('returnToBooking');
-        localStorage.removeItem('pendingBooking');
-        navigate(returnUrl);
-      } else if (pendingBooking) {
-        localStorage.removeItem('pendingBooking');
+      // Clear storage
+      localStorage.removeItem('returnToBooking');
+      localStorage.removeItem('pendingBooking');
+      
+      // Redirect to booking with saved dates
+      if (pendingBooking) {
         const pb = JSON.parse(pendingBooking);
         navigate(`/booking/${pb.propertyId}?moveIn=${pb.moveIn}&months=${pb.months}`);
+      } else if (returnUrl) {
+        navigate(returnUrl);
       } else {
         navigate(res.data.user.role === 'admin' ? '/admin' : '/');
       }

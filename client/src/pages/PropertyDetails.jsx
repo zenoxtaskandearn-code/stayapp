@@ -54,6 +54,13 @@ const PropertyDetails = () => {
 
   const handleBooking = () => {
     if (!isAuthenticated) {
+      // Store pending booking data before redirecting to login
+      localStorage.setItem('pendingBooking', JSON.stringify({ 
+        propertyId: id, 
+        moveIn: moveInDate, 
+        months: months 
+      }));
+      localStorage.setItem('returnToBooking', `/booking/${id}?moveIn=${moveInDate}&months=${months}`);
       window.location.href = '/login';
       return;
     }
