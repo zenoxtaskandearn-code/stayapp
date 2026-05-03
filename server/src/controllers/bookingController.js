@@ -1,6 +1,7 @@
 import { pool } from '../config/db.js';
 import moment from 'moment';
-import { sendBookingConfirmation, sendBookingApproved, sendBookingRejected } from '../services/emailService.js';
+import { sendBookingConfirmation, sendBookingApproved, sendBookingRejected, sendAdminBookingNotification } from '../services/emailService.js';
+import { createNotification } from '../routes/notifications.js';
 
 export const createBooking = async (req, res) => {
   try {
@@ -52,6 +53,7 @@ export const createBooking = async (req, res) => {
     // Get user details, settings, and payment methods
     const [users] = await pool.query('SELECT email, name FROM users WHERE id = ?', [userId]);
     const [settings] = await pool.query('SELECT * FROM settings LIMIT 1');
+    const [adminUsers] = await pool.query('SELECT email, name FROM users WHERE role = "admin" LIMIT 1');
     const [paymentMethods] = await pool.query(
       `SELECT pm.* 
        FROM payment_methods pm
@@ -66,6 +68,36 @@ export const createBooking = async (req, res) => {
       } catch (e) {
         console.log('Confirmation email not sent:', e.message);
       }
+    }
+
+    // Create notification for admin
+    try {
+      await createNotification(
+        'booking',
+        'New Booking Received',
+        `${users[0]?.name || 'A user'} booked "${property[0]?.title || 'a property'}" for ${booking[0]?.months || 1} month(s)`,
+        {
+          bookingId: result.insertId,
+          userId: userId,
+          propertyId: propId,
+          userName: users[0]?.name,
+          propertyTitle: property[0]?.title,
+          totalAmount: booking[0]?.total_amount,
+          currency: booking[0]?.currency,
+          moveInDate: booking[0]?.move_in_date
+        }
+      );
+    } catch (e) {
+      console.log('Notification creation failed:', e.message);
+    }
+
+    // Send admin email notification
+    try {
+      if (adminUsers.length > 0) {
+        await sendAdminBookingNotification(booking[0], users[0], property[0], adminUsers[0].email, settings[0] || {});
+      }
+    } catch (e) {
+      console.log('Admin email notification failed:', e.message);
     }
 
     res.status(201).json({ 

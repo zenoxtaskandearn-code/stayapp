@@ -26,6 +26,7 @@ import AdminBookings from './pages/admin/Bookings';
 import AdminCategories from './pages/admin/Categories';
 import AdminSettings from './pages/admin/Settings';
 import AdminPaymentMethods from './pages/admin/PaymentMethods';
+import AdminNotifications from './pages/admin/Notifications';
 import { useSettingsStore } from './store/settingsStore';
 import { getSettings } from './services/settingsService';
 
@@ -81,6 +82,7 @@ function AppContent() {
               <Route path="categories" element={<AdminCategories />} />
               <Route path="settings" element={<AdminSettings />} />
               <Route path="payment-methods" element={<AdminPaymentMethods />} />
+              <Route path="notifications" element={<AdminNotifications />} />
             </Route>
           </Routes>
         </AnimatePresence>

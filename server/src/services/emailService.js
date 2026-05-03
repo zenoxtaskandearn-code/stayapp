@@ -441,3 +441,115 @@ export const sendBookingRejected = async (email, userName, booking, property, se
     return false;
   }
 };
+
+// Send admin notification for new booking
+export const sendAdminBookingNotification = async (booking, user, property, adminEmail, settings = {}) => {
+  const siteName = settings.website_name || 'The Blueground';
+
+  const mailOptions = {
+    from: process.env.EMAIL_FROM || `${siteName} <noreply@stayfinder.com>`,
+    to: adminEmail,
+    subject: `🔔 New Booking Alert - #${booking.id} - ${siteName}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      </head>
+      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f3f4f6;">
+        <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+          ${emailHeader(settings)}
+          <div style="padding: 40px 30px;">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <div style="width: 70px; height: 70px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(16,185,129,0.3);">
+                <svg width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                  <path d="M22 2L11 13"></path>
+                  <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
+                </svg>
+              </div>
+              <h2 style="color: ${theme.dark}; margin: 0 0 10px 0; font-size: 24px; font-weight: 600;">New Booking Received!</h2>
+              <p style="color: ${theme.gray}; margin: 0; font-size: 15px;">A new booking has been submitted and requires your attention.</p>
+            </div>
+
+            <!-- Booking Details -->
+            <div style="background: ${theme.light}; border-radius: 12px; padding: 25px; margin-bottom: 25px;">
+              <h3 style="color: ${theme.dark}; margin: 0 0 15px 0; font-size: 16px; font-weight: 600;">Booking Details</h3>
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 8px 0; color: ${theme.gray}; font-size: 14px;">Booking ID</td>
+                  <td style="padding: 8px 0; text-align: right; color: ${theme.dark}; font-weight: 600; font-size: 14px;">#${booking.id}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: ${theme.gray}; font-size: 14px;">Property</td>
+                  <td style="padding: 8px 0; text-align: right; color: ${theme.dark}; font-weight: 600; font-size: 14px;">${property?.title || 'N/A'}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: ${theme.gray}; font-size: 14px;">Location</td>
+                  <td style="padding: 8px 0; text-align: right; color: ${theme.dark}; font-size: 14px;">${property?.location || 'N/A'}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: ${theme.gray}; font-size: 14px;">Customer</td>
+                  <td style="padding: 8px 0; text-align: right; color: ${theme.dark}; font-weight: 600; font-size: 14px;">${user?.name || 'N/A'}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: ${theme.gray}; font-size: 14px;">Email</td>
+                  <td style="padding: 8px 0; text-align: right; color: ${theme.dark}; font-size: 14px;">${user?.email || 'N/A'}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: ${theme.gray}; font-size: 14px;">Phone</td>
+                  <td style="padding: 8px 0; text-align: right; color: ${theme.dark}; font-size: 14px;">${user?.phone || 'N/A'}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: ${theme.gray}; font-size: 14px;">Move In</td>
+                  <td style="padding: 8px 0; text-align: right; color: ${theme.dark}; font-size: 14px;">${new Date(booking.move_in_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: ${theme.gray}; font-size: 14px;">Move Out</td>
+                  <td style="padding: 8px 0; text-align: right; color: ${theme.dark}; font-size: 14px;">${new Date(booking.move_out_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: ${theme.gray}; font-size: 14px;">Duration</td>
+                  <td style="padding: 8px 0; text-align: right; color: ${theme.dark}; font-size: 14px;">${booking.months} Month${booking.months > 1 ? 's' : ''}</td>
+                </tr>
+                <tr style="border-top: 2px solid #e5e7eb;">
+                  <td style="padding: 12px 0 8px 0; color: ${theme.dark}; font-size: 16px; font-weight: 600;">Total Amount</td>
+                  <td style="padding: 12px 0 8px 0; text-align: right; color: ${theme.primary}; font-size: 18px; font-weight: bold;">${formatPrice(booking.total_amount, booking.currency)}</td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- Action Required -->
+            <div style="background: #fef3c7; border-radius: 12px; padding: 20px; margin-bottom: 25px; border: 1px solid #fcd34d;">
+              <h4 style="color: #92400e; margin: 0 0 10px 0; font-size: 16px; font-weight: 600;">Action Required</h4>
+              <ul style="color: #78350f; margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.5;">
+                <li>Review the booking details above</li>
+                <li>Check customer information and contact details</li>
+                <li>Verify property availability for the requested dates</li>
+                <li>Approve or reject the booking in the admin panel</li>
+                <li>Monitor for payment proof submission</li>
+              </ul>
+            </div>
+
+            <div style="text-align: center; margin-top: 25px;">
+              <a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/admin/bookings" style="display: inline-block; background: ${theme.gradient}; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 14px;">
+                View in Admin Panel
+              </a>
+            </div>
+          </div>
+          ${emailFooter(settings)}
+        </div>
+      </body>
+      </html>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Admin booking notification sent to ${adminEmail}`);
+    return true;
+  } catch (error) {
+    console.error('Admin email error:', error);
+    return false;
+  }
+};

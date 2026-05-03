@@ -141,3 +141,15 @@ INSERT INTO categories (name, slug, description, icon) VALUES
 ('Studio', 'studio', 'Compact studio apartments', 'box'),
 ('Villa', 'villa', 'Luxury villas with gardens', 'tree')
 ON DUPLICATE KEY UPDATE id=id;
+
+-- Notifications table
+CREATE TABLE IF NOT EXISTS notifications (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  type ENUM('booking', 'payment', 'system') DEFAULT 'booking',
+  title VARCHAR(255) NOT NULL,
+  message TEXT,
+  data JSON,
+  is_read BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
-import { FiHome, FiGrid, FiCalendar, FiSettings, FiUser, FiLogOut, FiChevronLeft, FiChevronRight, FiPlus, FiCreditCard } from 'react-icons/fi';
+import { FiHome, FiGrid, FiCalendar, FiSettings, FiUser, FiLogOut, FiChevronLeft, FiChevronRight, FiPlus, FiCreditCard, FiBell } from 'react-icons/fi';
 import { useAuthStore } from '../store/useStore';
 import { useSettingsStore } from '../store/settingsStore';
 import { getSettings } from '../services/settingsService';
+import NotificationDropdown from './NotificationDropdown';
 
 const AdminLayout = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -26,8 +27,9 @@ const AdminLayout = () => {
 
   const adminNavItems = [
     { path: '/admin', label: 'Dashboard', icon: FiHome },
-    { path: '/admin/properties', label: 'Properties', icon: FiGrid },
     { path: '/admin/bookings', label: 'Bookings', icon: FiCalendar },
+    { path: '/admin/notifications', label: 'Notifications', icon: FiBell },
+    { path: '/admin/properties', label: 'Properties', icon: FiGrid },
     { path: '/admin/categories', label: 'Categories', icon: FiPlus },
     { path: '/admin/payment-methods', label: 'Payment Methods', icon: FiCreditCard },
     { path: '/admin/settings', label: 'Settings', icon: FiSettings },
@@ -100,6 +102,16 @@ const AdminLayout = () => {
 
       {/* Main Content */}
       <div className={`flex-1 transition-all duration-300 ${isOpen ? 'ml-64' : 'ml-20'}`}>
+        {/* Top Bar */}
+        <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <h1 className="text-xl font-semibold text-gray-900">Admin Dashboard</h1>
+          </div>
+          <div className="flex items-center gap-4">
+            <NotificationDropdown />
+          </div>
+        </div>
+
         <Outlet />
       </div>
     </div>

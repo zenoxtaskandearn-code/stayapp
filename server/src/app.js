@@ -15,6 +15,7 @@ import userRoutes from './routes/users.js';
 import categoryRoutes from './routes/categories.js';
 import uploadRoutes from './routes/upload.js';
 import paymentMethodRoutes from './routes/paymentMethods.js';
+import notificationRoutes from './routes/notifications.js';
 import { pool } from './config/db.js';
 
 dotenv.config();
@@ -118,6 +119,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/payment-methods', paymentMethodRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
