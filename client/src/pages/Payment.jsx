@@ -87,18 +87,18 @@ const Payment = () => {
                      <button
                        key={method.id}
                        onClick={() => handleViewInstructions(method.id)}
-                       className="w-full bg-primary/30 hover:bg-primary/40 rounded-xl p-4 text-left flex items-center gap-3 transition-colors"
+                       className="w-full bg-white border-2 border-primary/30 hover:border-primary hover:shadow-lg hover:shadow-primary/20 rounded-xl p-5 text-left flex items-center gap-4 transition-all cursor-pointer"
                      >
-                       <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                         <span className="text-white font-semibold text-sm">{method.name.charAt(0)}</span>
+                       <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center flex-shrink-0">
+                         <span className="text-white font-bold text-lg">{method.name.charAt(0)}</span>
                        </div>
                        <div className="flex-1">
-                         <div className="font-medium text-gray-900">{method.name}</div>
+                         <div className="font-bold text-gray-900 text-lg">{method.name}</div>
                          {method.description && (
-                           <div className="text-xs text-gray-700 line-clamp-1" dangerouslySetInnerHTML={{ __html: method.description }} />
+                           <div className="text-sm text-gray-600 line-clamp-2" dangerouslySetInnerHTML={{ __html: method.description }} />
                          )}
                        </div>
-                       <span className="text-primary text-lg">→</span>
+                       <FiChevronRight className="text-primary flex-shrink-0" size={24} />
                      </button>
                    ))}
                  </div>
