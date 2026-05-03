@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { FiMenu, FiX, FiHome, FiGrid, FiCalendar, FiSettings, FiLogOut, FiUser } from 'react-icons/fi';
 import { useAuthStore } from '../store/useStore';
 
@@ -13,7 +13,13 @@ const adminNavItems = [
 
 const AdminNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
   const { user, isAuthenticated, isAdmin, logout } = useAuthStore();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   if (!isAuthenticated || !isAdmin) return null;
 
@@ -53,7 +59,7 @@ const AdminNavbar = () => {
             <Link to="/" className="px-3 py-2 rounded-lg bg-gray-800 text-gray-300 text-sm font-medium hover:bg-gray-700 transition-colors">
               View Site
             </Link>
-            <button onClick={logout} className="px-3 py-2 rounded-lg border border-gray-600 text-gray-300 text-sm font-medium hover:bg-gray-800 transition-colors flex items-center gap-2">
+            <button onClick={handleLogout} className="px-3 py-2 rounded-lg border border-gray-600 text-gray-300 text-sm font-medium hover:bg-gray-800 transition-colors flex items-center gap-2">
               <FiLogOut size={14} />
               Logout
             </button>

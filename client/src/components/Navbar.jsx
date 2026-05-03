@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiMenu, FiX, FiUser, FiCalendar, FiLogOut } from 'react-icons/fi';
 import { useAuthStore, useCurrencyStore } from '../store/useStore';
@@ -10,6 +10,7 @@ const Navbar = ({ scrolled = false }) => {
   const [showLangMenu, setShowLangMenu] = useState(false);
   const [showCurrencyMenu, setShowCurrencyMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const navigate = useNavigate();
   const { isAuthenticated, logout, user } = useAuthStore();
   const { currency, symbol, setCurrency } = useCurrencyStore();
 
@@ -137,7 +138,7 @@ const Navbar = ({ scrolled = false }) => {
                         My Bookings
                       </Link>
                       <button
-                        onClick={() => { logout(); setShowProfileMenu(false); }}
+                        onClick={() => { logout(); navigate('/'); setShowProfileMenu(false); }}
                         className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
                       >
                         <FiLogOut size={16} />
@@ -227,7 +228,7 @@ const Navbar = ({ scrolled = false }) => {
                       <FiCalendar size={20} />
                       My Bookings
                     </Link>
-                    <button onClick={() => { logout(); setIsOpen(false); }} className="w-full mt-2 px-4 py-4 rounded-xl border border-gray-200 text-red-600 font-medium">
+                    <button onClick={() => { logout(); navigate('/'); setIsOpen(false); }} className="w-full mt-2 px-4 py-4 rounded-xl border border-gray-200 text-red-600 font-medium">
                       Logout
                     </button>
                   </>
