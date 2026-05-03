@@ -313,18 +313,23 @@ export const updateBooking = async (req, res) => {
     const updates = [];
     const params = [];
 
+    // Get property details for price calculation
+    const [property] = await pool.query('SELECT monthly_price, deposit FROM properties WHERE id = ?', [current[0].property_id]);
+    const monthlyPrice = parseFloat(property[0]?.monthly_price) || 0;
+    const depositAmount = parseFloat(property[0]?.deposit) || 0;
+
     // Only allow editing move_in_date and months
     if (move_in_date) {
       updates.push('move_in_date = ?');
       params.push(move_in_date);
-      
+
       // Also update move_out_date based on new move_in_date and existing months
       const monthsToUse = months || current[0].months;
       const [y, m, d] = move_in_date.split('-').map(Number);
       const startDate = new Date(y, m - 1, d);
       startDate.setMonth(startDate.getMonth() + monthsToUse);
       const newMoveOutDate = startDate.toISOString().split('T')[0];
-      
+
       updates.push('move_out_date = ?');
       params.push(newMoveOutDate);
     }
@@ -332,14 +337,19 @@ export const updateBooking = async (req, res) => {
     if (months) {
       updates.push('months = ?');
       params.push(months);
-      
+
+      // Recalculate total_amount when months change
+      const newTotalAmount = (monthlyPrice * months) + depositAmount;
+      updates.push('total_amount = ?');
+      params.push(newTotalAmount);
+
       // Also update move_out_date based on existing move_in_date and new months
       if (!move_in_date && current[0].move_in_date) {
         const [y, m, d] = current[0].move_in_date.split('-').map(Number);
         const startDate = new Date(y, m - 1, d);
         startDate.setMonth(startDate.getMonth() + months);
         const newMoveOutDate = startDate.toISOString().split('T')[0];
-        
+
         updates.push('move_out_date = ?');
         params.push(newMoveOutDate);
       }
