@@ -54,8 +54,9 @@ const Footer = () => {
               {[
                 { label: 'Home', path: '/' },
                 { label: 'Properties', path: '/properties' },
-                { label: 'About', path: '/#about' },
-                { label: 'Contact', path: '/#contact' },
+                { label: 'About', path: '/about' },
+                { label: 'Contact', path: '/contact' },
+                { label: 'FAQs', path: '/faq' },
               ].map((item) => (
                 <li key={item.label}>
                   <Link to={item.path} className="text-sm text-gray-400 hover:text-primary transition-colors">
@@ -73,6 +74,7 @@ const Footer = () => {
               {[
                 { label: 'Terms & Conditions', path: '/terms' },
                 { label: 'Privacy Policy', path: '/privacy' },
+                { label: 'FAQs', path: '/faq' },
                 { label: 'Contact Us', path: '/contact' },
               ].map((item) => (
                 <li key={item.label}>

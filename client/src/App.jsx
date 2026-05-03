@@ -18,6 +18,7 @@ import HowItWorks from './pages/HowItWorks';
 import Contact from './pages/Contact';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
+import FAQ from './pages/FAQ';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminProperties from './pages/admin/Properties';
 import AdminBookings from './pages/admin/Bookings';
@@ -70,6 +71,7 @@ function AppContent() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
+            <Route path="/faq" element={<FAQ />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="properties" element={<AdminProperties />} />
