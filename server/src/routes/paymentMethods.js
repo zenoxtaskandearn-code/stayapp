@@ -28,10 +28,10 @@ router.get('/admin/:id', async (req, res) => {
 // ADMIN: Create
 router.post('/admin', authenticate, authorize('admin'), async (req, res) => {
   try {
-    const { name, description, instructions, is_active } = req.body;
+    const { name, description, instructions, is_active, logo } = req.body;
     const [r] = await pool.query(
-      'INSERT INTO payment_methods (name, description, instructions, is_active) VALUES (?, ?, ?, ?)',
-      [name, description, instructions, is_active ?? true]
+      'INSERT INTO payment_methods (name, description, instructions, is_active, logo) VALUES (?, ?, ?, ?, ?)',
+      [name, description, instructions, is_active ?? true, logo || null]
     );
     res.status(201).json({ id: r.insertId, message: 'Created' });
   } catch (error) {
@@ -42,10 +42,10 @@ router.post('/admin', authenticate, authorize('admin'), async (req, res) => {
 // ADMIN: Update
 router.put('/admin/:id', authenticate, authorize('admin'), async (req, res) => {
   try {
-    const { name, description, instructions, is_active } = req.body;
+    const { name, description, instructions, is_active, logo } = req.body;
     await pool.query(
-      'UPDATE payment_methods SET name = ?, description = ?, instructions = ?, is_active = ? WHERE id = ?',
-      [name, description, instructions, is_active, req.params.id]
+      'UPDATE payment_methods SET name = ?, description = ?, instructions = ?, is_active = ?, logo = ? WHERE id = ?',
+      [name, description, instructions, is_active, logo || null, req.params.id]
     );
     res.json({ message: 'Updated' });
   } catch (error) {
@@ -78,9 +78,31 @@ router.get('/property/:propertyId', async (req, res) => {
   }
 });
 
-// PROPERTY: Update payment methods for a property (admin only)
-router.put('/property/:propertyId', authenticate, authorize('admin'), async (req, res) => {
+// ADMIN: Update logo for a payment method
+router.put('/admin/:id/logo', authenticate, authorize('admin'), async (req, res) => {
   try {
+    const { logo } = req.body;
+    if (!logo) {
+      return res.status(400).json({ message: 'Logo URL is required' });
+    }
+    await pool.query(
+      'UPDATE payment_methods SET logo = ? WHERE id = ?',
+      [logo, req.params.id]
+    );
+    res.json({ message: 'Logo updated' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// PROPERTY: Update payment methods for a property (authenticated users)
+router.put('/property/:propertyId', authenticate, async (req, res) => {
+  try {
+    // Verify user is authenticated
+    if (!req.user) {
+      return res.status(401).json({ message: 'Authentication required' });
+    }
+
     const { propertyId } = req.params;
     const { payment_method_ids } = req.body;
     

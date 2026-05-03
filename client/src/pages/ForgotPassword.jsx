@@ -92,6 +92,7 @@ const ForgotPassword = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 className="input-premium w-full"
+                autoComplete="new-password"
                 required
                 minLength={6}
               />

@@ -57,6 +57,8 @@ const syncDatabase = async () => {
     await addColumnIfMissing('payments', 'screenshot', 'VARCHAR(255) AFTER status');
     await addColumnIfMissing('payments', 'admin_notes', 'TEXT AFTER screenshot');
 
+    await addColumnIfMissing('payment_methods', 'logo', 'VARCHAR(500) AFTER instructions');
+
     console.log('✅ Database schema is up to date!');
   } catch (error) {
     console.error('⚠️  Schema sync error:', error.message);

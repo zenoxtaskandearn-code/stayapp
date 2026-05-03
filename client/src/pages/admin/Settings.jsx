@@ -102,6 +102,7 @@ const AdminSettings = () => {
                 onChange={handleChange}
                 className="input-premium w-full"
                 placeholder="Enter current password"
+                autoComplete="current-password"
                 required
               />
             </div>
@@ -114,6 +115,7 @@ const AdminSettings = () => {
                 onChange={handleChange}
                 className="input-premium w-full"
                 placeholder="Enter new password"
+                autoComplete="new-password"
                 required
               />
             </div>
@@ -126,6 +128,7 @@ const AdminSettings = () => {
                 onChange={handleChange}
                 className="input-premium w-full"
                 placeholder="Confirm new password"
+                autoComplete="new-password"
                 required
               />
             </div>

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FiPlus, FiEdit, FiTrash2, FiCreditCard, FiSave, FiX } from 'react-icons/fi';
+import { FiPlus, FiEdit, FiTrash2, FiCreditCard, FiSave, FiX, FiUpload, FiImage } from 'react-icons/fi';
 import { paymentMethodService } from '../../services/paymentMethodService';
+import api from '../../services/api';
 import Loader from '../../components/Loader';
 
 const AdminPaymentMethods = () => {
@@ -15,7 +16,9 @@ const AdminPaymentMethods = () => {
     description: '',
     instructions: '',
     is_active: true,
+    logo: '',
   });
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     fetchMethods();
@@ -48,7 +51,7 @@ const AdminPaymentMethods = () => {
       }
       setShowModal(false);
       setEditMethod(null);
-      setFormData({ name: '', description: '', instructions: '', is_active: true });
+      setFormData({ name: '', description: '', instructions: '', is_active: true, logo: '' });
       fetchMethods();
     } catch (error) {
       console.error('Error saving:', error);
@@ -65,6 +68,7 @@ const AdminPaymentMethods = () => {
       description: method.description || '',
       instructions: method.instructions || '',
       is_active: method.is_active !== false,
+      logo: method.logo || '',
     });
     setShowModal(true);
   };
@@ -83,8 +87,30 @@ const AdminPaymentMethods = () => {
 
   const openAddModal = () => {
     setEditMethod(null);
-    setFormData({ name: '', description: '', instructions: '', is_active: true });
+    setFormData({ name: '', description: '', instructions: '', is_active: true, logo: '' });
     setShowModal(true);
+  };
+
+  const handleLogoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const formDataFile = new FormData();
+      formDataFile.append('file', file);
+
+      const res = await api.post('/upload', formDataFile, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      setFormData({ ...formData, logo: res.data.url });
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      alert('Error uploading logo');
+    } finally {
+      setUploading(false);
+    }
   };
 
   if (loading) return <Loader />;
@@ -136,9 +162,17 @@ const AdminPaymentMethods = () => {
                   <div className="p-6">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
-                          <FiCreditCard className="text-primary" size={20} />
-                        </div>
+                        {method.logo ? (
+                          <img 
+                            src={method.logo} 
+                            alt={method.name}
+                            className="w-12 h-12 rounded-xl object-cover"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                            <FiCreditCard className="text-primary" size={20} />
+                          </div>
+                        )}
                         <div>
                           <h3 className="font-semibold text-gray-900">{method.name}</h3>
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -214,6 +248,42 @@ const AdminPaymentMethods = () => {
                     className="input-premium"
                     placeholder="e.g., Bank Transfer, Cash Payment"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Logo</label>
+                  <div className="space-y-3">
+                    {formData.logo && (
+                      <div className="relative w-20 h-20 rounded-xl overflow-hidden border-2 border-gray-200">
+                        <img 
+                          src={formData.logo} 
+                          alt="Logo preview"
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setFormData({ ...formData, logo: '' })}
+                          className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity"
+                        >
+                          <FiX className="text-white" size={20} />
+                        </button>
+                      </div>
+                    )}
+                    <label className="flex items-center gap-2 px-4 py-3 border-2 border-dashed border-gray-300 rounded-xl hover:border-primary hover:bg-primary/5 cursor-pointer transition-colors">
+                      <FiUpload className="text-gray-500" size={18} />
+                      <span className="text-sm text-gray-600 font-medium">
+                        {uploading ? 'Uploading...' : 'Upload Logo'}
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoUpload}
+                        disabled={uploading}
+                        className="hidden"
+                      />
+                    </label>
+                    <p className="text-xs text-gray-500">PNG, JPG, GIF or SVG. Max 5MB</p>
+                  </div>
                 </div>
 
 <div>

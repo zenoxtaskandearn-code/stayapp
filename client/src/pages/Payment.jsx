@@ -89,9 +89,17 @@ const Payment = () => {
                        onClick={() => handleViewInstructions(method.id)}
                        className="w-full bg-white border-2 border-primary/30 hover:border-primary hover:shadow-lg hover:shadow-primary/20 rounded-xl p-5 text-left flex items-center gap-4 transition-all cursor-pointer"
                      >
-                       <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center flex-shrink-0">
-                         <span className="text-white font-bold text-lg">{method.name.charAt(0)}</span>
-                       </div>
+                       {method.logo ? (
+                         <img 
+                           src={method.logo} 
+                           alt={method.name}
+                           className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+                         />
+                       ) : (
+                         <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                           <span className="text-white font-bold text-lg">{method.name.charAt(0)}</span>
+                         </div>
+                       )}
                        <div className="flex-1">
                          <div className="font-bold text-gray-900 text-lg">{method.name}</div>
                          {method.description && (

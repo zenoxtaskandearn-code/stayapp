@@ -205,6 +205,7 @@ const handleSubmit = async (e) => {
                 className="input-premium w-full pl-11"
                 required
                 minLength={6}
+                autoComplete="new-password"
               />
             </div>
           </div>
