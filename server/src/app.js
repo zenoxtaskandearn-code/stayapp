@@ -67,12 +67,22 @@ syncDatabase();
 // MIDDLEWARE
 // ==========================================
 app.use(helmet());
-app.use(cors({
-  origin: true, // Allow all origins in production
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, Postman)
+    // Or localhost in development
+    if (!origin || origin.startsWith('http://localhost') || origin.startsWith('https://')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+};
+
+app.use(cors(corsOptions));
 
 // Handle OPTIONS preflight for all routes
 app.use((req, res, next) => {
