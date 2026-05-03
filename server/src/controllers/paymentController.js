@@ -60,10 +60,25 @@ export const verifyPayment = async (req, res) => {
     );
 
     if (status === 'verified') {
-      await pool.query(
-        'UPDATE bookings SET payment_status = "verified", booking_status = "approved" WHERE id = (SELECT booking_id FROM payments WHERE id = ?)',
+      // Get booking and property info first
+      const [bookings] = await pool.query(
+        `SELECT b.property_id, b.move_in_date, b.months FROM bookings b 
+         JOIN payments p ON p.booking_id = b.id WHERE p.id = ?`,
         [id]
       );
+      
+      if (bookings.length > 0) {
+        await pool.query(
+          'UPDATE bookings SET payment_status = "verified", booking_status = "approved" WHERE id = (SELECT booking_id FROM payments WHERE id = ?)',
+          [id]
+        );
+        
+        // Mark property as booked with unavailable dates
+        await pool.query(
+          `UPDATE properties SET status = 'booked', unavailable_dates = ? WHERE id = ?`,
+          [JSON.stringify({ booking_id: bookings[0].booking_id, move_in: bookings[0].move_in_date, months: bookings[0].months }), bookings[0].property_id]
+        );
+      }
     }
 
     res.json({ message: 'Payment verification updated' });
