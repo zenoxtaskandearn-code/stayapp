@@ -25,30 +25,24 @@ export const register = async (req, res) => {
       return res.status(400).json({ message: 'Email already registered' });
     }
 
-    // Generate OTP and store temporarily
-    const otp = generateOTP();
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Insert user with OTP (not verified yet)
-    await pool.query(
-      'INSERT INTO users (name, email, password, phone, verification_otp, otp_expires, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [name, email, hashedPassword, phone, otp, otpExpiry, false]
+    // Insert user (auto-verified, no OTP needed)
+    const [result] = await pool.query(
+      'INSERT INTO users (name, email, password, phone, is_verified) VALUES (?, ?, ?, ?, ?)',
+      [name, email, hashedPassword, phone, true]
     );
 
-    // Send OTP email
-    try {
-      await sendOTPEmail(email, otp, 'verification');
-    } catch (e) {
-      console.log('Email not sent (configure SMTP):', e.message);
-    }
+    // Generate token
+    const token = jwt.sign({ id: result.insertId, email }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN || '7d',
+    });
 
     res.status(201).json({ 
-      message: 'Registration successful! Please check your email for verification code.',
-      needsVerification: true,
-      userId: 0 // Will be returned after verification
+      message: 'Registration successful! Welcome to StayFinder.',
+      user: { id: result.insertId, name, email, phone, role: 'user' },
+      token
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

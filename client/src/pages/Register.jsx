@@ -24,14 +24,8 @@ const Register = () => {
 
     try {
       const res = await api.post('/auth/register', formData);
-      
-      if (res.data.needsVerification) {
-        setVerificationStep(true);
-        setUserEmail(formData.email);
-      } else {
-        login(res.data.user, res.data.token);
-        navigate('/');
-      }
+      login(res.data.user, res.data.token);
+      navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
     } finally {
