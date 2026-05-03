@@ -213,7 +213,7 @@ const Payment = () => {
               </div>
               <p className="text-sm text-gray-500 mb-4">Contact our support team for any questions about your booking.</p>
               <a href="mailto:info@estate-theblueground.co.uk" className="block text-center py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary-dark transition-colors">
-                Contact Support: info@estate-theblueground.co.uk
+                Contact Support
               </a>
             </motion.div>
           </div>
