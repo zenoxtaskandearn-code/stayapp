@@ -5,10 +5,12 @@ dotenv.config();
 
 // Create transporter - configure for your email provider
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: process.env.SMTP_HOST || 'mail.privateemail.com',
+  port: parseInt(process.env.SMTP_PORT) || 465,
+  secure: process.env.SMTP_SECURE === 'true',
   auth: {
-    user: process.env.EMAIL_USER || 'your-email@gmail.com',
-    pass: process.env.EMAIL_PASS || 'your-app-password',
+    user: process.env.EMAIL_USER || 'info@estate-theblueground.co.uk',
+    pass: process.env.EMAIL_PASS || 'muie1985A"',
   },
   tls: {
     rejectUnauthorized: false,
