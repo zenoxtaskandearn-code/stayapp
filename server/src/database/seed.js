@@ -229,21 +229,20 @@ const seedData = async () => {
   const userPassword = await bcrypt.hash('user123', 10);
 
   // Users - only if no admin exists
-  const [adminCheck] = await pool.query("SELECT id FROM users WHERE role = 'admin'");
+  const [adminCheck] = await pool.query("SELECT id FROM users WHERE role = 'admin' LIMIT 1");
   if (adminCheck.length === 0) {
-    console.log('\n👤 Creating admin and test users...');
-    await pool.query(
-      `INSERT INTO users (name, email, password, role, is_verified) VALUES (?, ?, ?, 'admin', TRUE)`,
-      ['Admin User', 'amitxrajwar@gmail.com', adminPassword]
-    );
-    console.log('✅ Admin: amitxrajwar@gmail.com / admin123');
+    console.log('\n👤 Creating admin user...');
+    try {
+      await pool.query(
+        `INSERT INTO users (name, email, password, role, is_verified) VALUES (?, ?, ?, 'admin', TRUE)`,
+        ['Admin User', 'admin@premiumstays.com', adminPassword]
+      );
+      console.log('✅ Admin: admin@premiumstays.com / admin123');
+    } catch (error) {
+      console.log('⚠️ Admin user might already exist:', error.message);
+    }
   } else {
-    console.log('\n👤 Admin user exists, resetting password...');
-    await pool.query(
-      `UPDATE users SET password = ?, is_verified = TRUE WHERE email = ?`,
-      [adminPassword, 'amitxrajwar@gmail.com']
-    );
-    console.log('✅ Admin password reset: amitxrajwar@gmail.com / admin123');
+    console.log('\n👤 Admin user exists, skipping...');
   }
 
   // Categories - only if empty

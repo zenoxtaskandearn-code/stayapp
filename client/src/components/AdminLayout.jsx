@@ -4,7 +4,7 @@ import { FiHome, FiGrid, FiCalendar, FiSettings, FiUser, FiLogOut, FiChevronLeft
 import { useAuthStore } from '../store/useStore';
 import { useSettingsStore } from '../store/settingsStore';
 import { getSettings } from '../services/settingsService';
-// import NotificationDropdown from './NotificationDropdown';
+import NotificationDropdown from './NotificationDropdown';
 
 const AdminLayout = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -51,9 +51,12 @@ const AdminLayout = () => {
             </div>
             {isOpen && <span className="font-bold">Admin</span>}
           </Link>
-          <button onClick={() => setIsOpen(!isOpen)} className="p-1 hover:bg-gray-800 rounded">
-            {isOpen ? <FiChevronLeft size={18} /> : <FiChevronRight size={18} />}
-          </button>
+          <div className="flex items-center gap-2">
+            <NotificationDropdown />
+            <button onClick={() => setIsOpen(!isOpen)} className="p-1 hover:bg-gray-800 rounded">
+              {isOpen ? <FiChevronLeft size={18} /> : <FiChevronRight size={18} />}
+            </button>
+          </div>
         </div>
 
         {/* Nav Items */}

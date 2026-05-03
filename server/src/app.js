@@ -25,42 +25,43 @@ const PORT = process.env.PORT || 5000;
 
 // ==========================================
 // 🔧 AUTO DATABASE SCHEMA SYNC
-// Runs on startup to ensure all columns exist
+// Runs on startup to ensure all tables exist
 // ==========================================
 const syncDatabase = async () => {
   try {
     console.log('🔧 Checking database schema...');
-    
-    const addColumnIfMissing = async (table, column, definition) => {
-      const [rows] = await pool.query(
-        `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
-         WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?`,
-        [table, column]
-      );
-      if (rows.length === 0) {
-        await pool.query(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
-        console.log(`   ✓ Added ${column} to ${table}`);
+
+    // Read and execute schema.sql file
+    const fs = await import('fs');
+    const path = await import('path');
+    const { fileURLToPath } = await import('url');
+
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    const schemaPath = path.join(__dirname, 'database', 'schema.sql');
+
+    if (fs.existsSync(schemaPath)) {
+      const schemaSQL = fs.readFileSync(schemaPath, 'utf8');
+      const statements = schemaSQL.split(';').filter(stmt => stmt.trim());
+
+      for (const statement of statements) {
+        if (statement.trim()) {
+          try {
+            await pool.query(statement);
+          } catch (error) {
+            // Ignore errors for existing tables/columns
+            if (!error.message.includes('already exists') &&
+                !error.message.includes('Duplicate column name') &&
+                !error.message.includes('Duplicate entry')) {
+              console.log(`⚠️  SQL execution warning: ${error.message}`);
+            }
+          }
+        }
       }
-    };
-
-    await addColumnIfMissing('users', 'phone', 'VARCHAR(20) AFTER email');
-    await addColumnIfMissing('users', 'reset_token', 'VARCHAR(255) AFTER is_verified');
-    await addColumnIfMissing('users', 'reset_expires', 'DATETIME AFTER reset_token');
-
-    await addColumnIfMissing('properties', 'map_link', 'TEXT AFTER location');
-    await addColumnIfMissing('properties', 'deposit', 'DECIMAL(10,2) DEFAULT 0 AFTER monthly_price');
-    await addColumnIfMissing('properties', 'min_rental_months', 'INT DEFAULT 0 AFTER deposit');
-    await addColumnIfMissing('properties', 'unavailable_dates', 'TEXT AFTER status');
-
-    await addColumnIfMissing('bookings', 'currency', "VARCHAR(3) DEFAULT 'USD' AFTER total_amount");
-    await addColumnIfMissing('bookings', 'payment_method_id', 'INT DEFAULT NULL AFTER currency');
-
-    await addColumnIfMissing('payments', 'screenshot', 'VARCHAR(255) AFTER status');
-    await addColumnIfMissing('payments', 'admin_notes', 'TEXT AFTER screenshot');
-
-    await addColumnIfMissing('payment_methods', 'logo', 'VARCHAR(500) AFTER instructions');
-
-    console.log('✅ Database schema is up to date!');
+      console.log('✅ Database schema is up to date!');
+    } else {
+      console.log('⚠️  schema.sql file not found, skipping schema sync');
+    }
   } catch (error) {
     console.error('⚠️  Schema sync error:', error.message);
   }

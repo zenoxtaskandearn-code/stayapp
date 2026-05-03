@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { notificationService } from '../services/notificationService'
 
 export const useNotificationStore = create((set, get) => ({
   notifications: [],
@@ -8,9 +9,13 @@ export const useNotificationStore = create((set, get) => ({
   fetchNotifications: async () => {
     set({ loading: true })
     try {
-      set({ notifications: [] })
+      const response = await notificationService.getAll()
+      const notifications = response.data || []
+      const unreadCount = notifications.filter(n => !n.is_read).length
+      set({ notifications, unreadCount })
     } catch (error) {
       console.error('Error fetching notifications:', error)
+      set({ notifications: [], unreadCount: 0 })
     } finally {
       set({ loading: false })
     }
@@ -18,14 +23,17 @@ export const useNotificationStore = create((set, get) => ({
 
   fetchUnreadCount: async () => {
     try {
-      set({ unreadCount: 0 })
+      const response = await notificationService.getUnreadCount()
+      set({ unreadCount: response.data.count || 0 })
     } catch (error) {
       console.error('Error fetching unread count:', error)
+      set({ unreadCount: 0 })
     }
   },
 
   markAsRead: async (id) => {
     try {
+      await notificationService.markAsRead(id)
       const notifications = get().notifications.map(n =>
         n.id === id ? { ...n, is_read: true } : n
       )
@@ -38,6 +46,7 @@ export const useNotificationStore = create((set, get) => ({
 
   markAllAsRead: async () => {
     try {
+      await notificationService.markAllAsRead()
       const notifications = get().notifications.map(n => ({ ...n, is_read: true }))
       set({ notifications, unreadCount: 0 })
     } catch (error) {
