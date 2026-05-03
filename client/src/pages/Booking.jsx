@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaSpinner } from 'react-icons/fa';
+import { FaSpinner, FaMapMarkerAlt, FaCalendar } from 'react-icons/fa';
 import { bookingService } from '../services/bookingService';
 import { propertyService } from '../services/propertyService';
 import { useAuthStore, useCurrencyStore } from '../store/useStore';
@@ -119,6 +119,8 @@ const Booking = () => {
   if (!property) return <div className="p-8 text-center">Property not found</div>;
 
   const totalPrice = property.monthly_price * formData.months;
+  const depositAmount = parseFloat(property.deposit) || 0;
+  const grandTotal = totalPrice + depositAmount;
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 md:py-12">
@@ -147,7 +149,7 @@ const Booking = () => {
               <div className="p-6">
                 <h1 className="text-2xl font-bold text-gray-900 mb-2">{property.title}</h1>
                 <p className="text-gray-500 flex items-center gap-2">
-                  <span>📍</span> {property.location}
+                  <FaMapMarkerAlt className="text-gray-400" /> {property.location}
                 </p>
               </div>
             </div>
@@ -241,15 +243,15 @@ const Booking = () => {
                   <span className="text-gray-600">{formatPrice(property.monthly_price)} x {formData.months} month(s)</span>
                   <span className="text-gray-900">{formatPrice(totalPrice)}</span>
                 </div>
-                {property.deposit > 0 && (
+                {depositAmount > 0 && (
                   <div className="flex justify-between">
                     <span className="text-gray-600">Security Deposit</span>
-                    <span className="text-gray-900">{formatPrice(property.deposit)}</span>
+                    <span className="text-gray-900">{formatPrice(depositAmount)}</span>
                   </div>
                 )}
                 <div className="pt-3 border-t border-gray-200 flex justify-between font-semibold">
                   <span className="text-gray-900">Total</span>
-                  <span className="text-primary">{formatPrice(totalPrice + (property.deposit || 0))}</span>
+                  <span className="text-primary">{formatPrice(grandTotal)}</span>
                 </div>
               </div>
 
