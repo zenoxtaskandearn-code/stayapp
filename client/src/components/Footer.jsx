@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaPhone, FaEnvelope, FaMapMarkerAlt, FaArrowUp } from 'react-icons/fa';
+import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaPhone, FaEnvelope, FaArrowUp } from 'react-icons/fa';
 import Logo from './Logo';
 
 const WaveShape = () => (
@@ -71,15 +71,14 @@ const Footer = () => {
             <h3 className="text-white font-semibold mb-4">Support</h3>
             <ul className="space-y-2">
               {[
-                { label: 'Help Center', href: '#' },
-                { label: 'Safety Info', href: '#' },
-                { label: 'Cancellation', href: '#' },
-                { label: 'FAQs', href: '#' },
+                { label: 'Terms & Conditions', path: '/terms' },
+                { label: 'Privacy Policy', path: '/privacy' },
+                { label: 'Contact Us', path: '/contact' },
               ].map((item) => (
                 <li key={item.label}>
-                  <a href={item.href} className="text-sm text-gray-400 hover:text-primary transition-colors">
+                  <Link to={item.path} className="text-sm text-gray-400 hover:text-primary transition-colors">
                     {item.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -89,20 +88,16 @@ const Footer = () => {
           <div>
             <h3 className="text-white font-semibold mb-4">Contact</h3>
             <ul className="space-y-3 text-sm">
-              <li className="flex items-center gap-2">
-                <FaMapMarkerAlt className="text-primary text-xs" />
-                <span className="text-gray-400">123 Main Street</span>
-              </li>
               <li>
-                <a href="mailto:info@stayfinder.com" className="flex items-center gap-2 text-gray-400 hover:text-primary transition-colors">
+                <a href="mailto:info@estate-theblueground.co.uk" className="flex items-center gap-2 text-gray-400 hover:text-primary transition-colors">
                   <FaEnvelope className="text-xs" />
-                  <span>info@stayfinder.com</span>
+                  <span>info@estate-theblueground.co.uk</span>
                 </a>
               </li>
               <li>
-                <a href="tel:+15551234567" className="flex items-center gap-2 text-gray-400 hover:text-primary transition-colors">
+                <a href="tel:+447397943670" className="flex items-center gap-2 text-gray-400 hover:text-primary transition-colors">
                   <FaPhone className="text-xs" />
-                  <span>+1 (555) 123-4567</span>
+                  <span>+44 739 794 3670</span>
                 </a>
               </li>
             </ul>
@@ -113,8 +108,8 @@ const Footer = () => {
         <div className="pt-6 border-t border-gray-800 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-gray-500">&copy; {new Date().getFullYear()} The Blueground. All rights reserved.</p>
           <div className="flex gap-4">
-            <a href="#" className="text-xs text-gray-500 hover:text-primary transition-colors">Privacy</a>
-            <a href="#" className="text-xs text-gray-500 hover:text-primary transition-colors">Terms</a>
+            <Link to="/privacy" className="text-xs text-gray-500 hover:text-primary transition-colors">Privacy</Link>
+            <Link to="/terms" className="text-xs text-gray-500 hover:text-primary transition-colors">Terms</Link>
           </div>
           
           <button

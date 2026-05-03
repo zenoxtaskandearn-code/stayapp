@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { FaMapMarkerAlt, FaPhone, FaEnvelope } from 'react-icons/fa';
+import { FaPhone, FaEnvelope } from 'react-icons/fa';
 
 const Contact = () => {
   return (
@@ -22,9 +22,8 @@ const Contact = () => {
           >
             <div className="space-y-6">
               {[
-                { icon: FaMapMarkerAlt, title: 'Address', info: '123 Property Street, New York, NY 10001' },
-                { icon: FaPhone, title: 'Phone', info: '+1 (555) 123-4567' },
-                { icon: FaEnvelope, title: 'Email', info: 'contact@stayfinder.com' },
+                { icon: FaEnvelope, title: 'Email', info: 'info@estate-theblueground.co.uk' },
+                { icon: FaPhone, title: 'Phone', info: '+44 739 794 3670' },
               ].map((item) => (
                 <div key={item.title} className="flex gap-4">
                   <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
