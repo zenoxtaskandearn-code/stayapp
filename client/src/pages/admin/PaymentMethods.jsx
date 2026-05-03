@@ -231,13 +231,13 @@ const AdminPaymentMethods = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Instructions (HTML Allowed)
                   </label>
-                  <textarea
-                    value={formData.instructions}
-                    onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
-                    rows={6}
-                    className="input-premium w-full resize-none font-mono text-sm"
-                    placeholder="<p>Payment instructions here...</p>"
-                  />
+<textarea
+                      value={formData.instructions}
+                      onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
+                      rows={6}
+                      className="input-premium w-full"
+                      placeholder="<p><b>Bank Transfer Details:</b></p><p>Account: 1234567890</p><p>Sort Code: 00-00-00</p>"
+                    />
                   <p className="text-xs text-gray-500 mt-1">
                     You can use HTML tags like &lt;b&gt;, &lt;br/&gt;, &lt;a&gt; for formatting.
                   </p>
