@@ -59,7 +59,6 @@ const Payment = () => {
     <div className="section-padding">
       <div className="container-custom">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left - Payment Instructions */}
           <div className="lg:col-span-2">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -72,18 +71,6 @@ const Payment = () => {
                   <h2 className="text-2xl font-bold text-gray-900">Booking ID: #{booking.id}</h2>
                   <p className="text-gray-500">Booking confirmed! Please complete your payment.</p>
                 </div>
-              </div>
-
-              {/* Reservation Notice */}
-              <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
-                <h4 className="font-semibold text-yellow-800 mb-2">Reservation Notice</h4>
-                <p className="text-sm text-yellow-700">
-                  Your reservation is now confirmed and temporarily secured.<br />
-                  Please complete the payment within <strong>24 hours</strong>.
-                </p>
-                <p className="text-sm text-yellow-700 mt-2">
-                  If the payment is not received within this time frame, the reservation will be automatically canceled due to non-payment.
-                </p>
               </div>
 
               <h3 className="text-lg font-semibold mb-4">Select Payment Method</h3>
@@ -112,6 +99,17 @@ const Payment = () => {
                 </div>
               )}
 
+              <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
+                <h4 className="font-semibold text-yellow-800 mb-2">Reservation Notice</h4>
+                <p className="text-sm text-yellow-700">
+                  Your reservation is now confirmed and temporarily secured.<br />
+                  Please complete the payment within <strong>24 hours</strong>.
+                </p>
+                <p className="text-sm text-yellow-700 mt-2">
+                  If the payment is not received within this time frame, the reservation will be automatically canceled due to non-payment.
+                </p>
+              </div>
+
               <div className="mt-6 p-4 bg-green-50 rounded-xl">
                 <div className="flex items-center gap-2">
                   <FiCheckCircle className="text-green-600" />
@@ -121,7 +119,6 @@ const Payment = () => {
             </motion.div>
           </div>
 
-          {/* Right - Booking Details */}
           <div className="lg:col-span-1">
             <motion.div
               initial={{ opacity: 0, x: 20 }}
@@ -191,7 +188,6 @@ const Payment = () => {
               </div>
             </motion.div>
 
-            {/* Need Help Card */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -211,7 +207,6 @@ const Payment = () => {
         </div>
       </div>
 
-      {/* Payment Instructions Modal */}
       <AnimatePresence>
         {selectedMethod && methodDetails && (
           <motion.div
