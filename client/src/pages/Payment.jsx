@@ -76,16 +76,25 @@ const Payment = () => {
 <h3 className="text-lg font-semibold mb-4">Select Payment Method</h3>
                
                {booking.payment_methods?.length > 0 && (
-                 <div className="flex flex-wrap gap-2">
+                 <div className="space-y-4">
                    {booking.payment_methods.map((method) => (
-                     <button
-                       key={method.id}
-                       onClick={() => handleViewInstructions(method.id)}
-                       className="bg-primary text-white px-4 py-2 rounded-full text-sm font-medium flex items-center gap-1"
-                     >
-                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
-                       {method.name}
-                     </button>
+                     <div key={method.id} className="border border-gray-200 rounded-xl overflow-hidden">
+                       <button
+                         onClick={() => handleViewInstructions(method.id)}
+                         className="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50 transition-colors"
+                       >
+                         <div className="flex items-center gap-4">
+                           <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                             <FiCreditCard className="text-primary w-6 h-6" />
+                           </div>
+                           <div>
+                             <h4 className="font-semibold text-gray-900">{method.name}</h4>
+                             <p className="text-sm text-gray-500 line-clamp-2">{method.description?.replace(/<[^>]*>/g, '').slice(0, 80)}...</p>
+                           </div>
+                         </div>
+                         <FiExternalLink className="text-primary" />
+                       </button>
+                     </div>
                    ))}
                  </div>
               )}

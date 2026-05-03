@@ -405,7 +405,7 @@ title: '', location: '', description: '', map_link: '', monthly_price: '', depos
               <div>
                 <h3 className="font-semibold text-gray-900 mb-4">Payment Methods</h3>
                 <p className="text-sm text-gray-500 mb-4">Select all payment methods available for this property</p>
-                <div className="flex flex-wrap gap-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {paymentMethods.map((pm) => (
                     <button
                       type="button"
@@ -420,14 +420,25 @@ title: '', location: '', description: '', map_link: '', monthly_price: '', depos
                         }
                         setFormData({ ...formData, payment_method_ids: ids });
                       }}
-                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                      className={`px-4 py-3 rounded-xl text-left transition-all border-2 ${
                         formData.payment_method_ids.includes(pm.id)
-                          ? 'bg-primary text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          ? 'border-primary bg-primary/5 text-primary font-medium'
+                          : 'border-gray-200 bg-white hover:bg-gray-50 text-gray-700'
                       }`}
                     >
-                      {formData.payment_method_ids.includes(pm.id) && <FiCheck size={12} className="inline mr-1" />}
-                      {pm.name}
+                      <div className="flex items-center gap-2">
+                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                          formData.payment_method_ids.includes(pm.id) ? 'border-primary bg-primary text-white' : 'border-gray-300'
+                        }`}>
+                          {formData.payment_method_ids.includes(pm.id) && '✓'}
+                        </div>
+                        <div>
+                          <div className="font-medium">{pm.name}</div>
+                          {pm.instructions && (
+                            <div className="text-xs text-gray-500 mt-1" dangerouslySetInnerHTML={{ __html: pm.instructions.replace(/\n/g, '<br/>') }} />
+                          )}
+                        </div>
+                      </div>
                     </button>
                   ))}
                 </div>
