@@ -94,9 +94,10 @@ const Booking = () => {
     try {
       const bookingData = {
         property_id: parseInt(id),
+        propertyId: parseInt(id),
         move_in_date: formData.moveIn,
         months: formData.months,
-        total_amount: property?.monthly_price * formData.months,
+        user_id: user?.id,
         currency: currency,
       };
       const res = await bookingService.createBooking(bookingData);

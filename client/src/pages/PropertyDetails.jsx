@@ -146,7 +146,8 @@ const PropertyDetails = () => {
                   <h2 className="text-xl font-semibold mb-3">Accepted Payment Methods</h2>
                   <div className="flex flex-wrap gap-2">
                     {property.payment_methods.map((method) => (
-                      <span key={method.id} className="bg-primary text-white px-4 py-2 rounded-full text-sm font-medium">
+                      <span key={method.id} className="bg-primary text-white px-4 py-2 rounded-full text-sm font-medium flex items-center gap-1">
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
                         {method.name}
                       </span>
                     ))}

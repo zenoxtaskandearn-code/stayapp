@@ -426,6 +426,7 @@ title: '', location: '', description: '', map_link: '', monthly_price: '', depos
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}
                     >
+                      {formData.payment_method_ids.includes(pm.id) && <FiCheck size={12} className="inline mr-1" />}
                       {pm.name}
                     </button>
                   ))}
