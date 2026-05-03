@@ -20,7 +20,7 @@ const Footer = () => {
       <WaveShape />
       
       <div className="container-custom pb-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-10">
           {/* Brand */}
           <div className="sm:col-span-1 lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
@@ -67,25 +67,6 @@ const Footer = () => {
                   </Link>
                 </li>
               ))}
-            </ul>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <h3 className="text-white font-semibold mb-4">Contact</h3>
-            <ul className="space-y-3 text-sm">
-              <li>
-                <a href="mailto:info@estate-theblueground.co.uk" className="flex items-center gap-2 text-gray-400 hover:text-primary transition-colors">
-                  <FaEnvelope className="text-xs" />
-                  <span>info@estate-theblueground.co.uk</span>
-                </a>
-              </li>
-              <li>
-                <a href="tel:+447397943670" className="flex items-center gap-2 text-gray-400 hover:text-primary transition-colors">
-                  <FaPhone className="text-xs" />
-                  <span>+44 739 794 3670</span>
-                </a>
-              </li>
             </ul>
           </div>
         </div>
