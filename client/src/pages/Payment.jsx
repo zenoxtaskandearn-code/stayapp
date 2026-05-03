@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiCheckCircle, FiCreditCard, FiMapPin, FiHome, FiCalendar, FiX, FiExternalLink, FiHelpCircle } from 'react-icons/fi';
+import { FiCheckCircle, FiCreditCard, FiMapPin, FiHome, FiCalendar, FiX, FiExternalLink, FiHelpCircle, FiChevronRight } from 'react-icons/fi';
 import Loader from '../components/Loader';
 import { bookingService } from '../services/bookingService';
 import { paymentMethodService } from '../services/paymentMethodService';
