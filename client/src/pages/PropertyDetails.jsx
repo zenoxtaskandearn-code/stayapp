@@ -149,7 +149,7 @@ const PropertyDetails = () => {
                       <div key={method.id} className="bg-primary/30 rounded-xl p-4">
                         <div className="font-semibold text-gray-900">{method.name}</div>
                         {method.description && (
-                          <div className="text-sm text-gray-700 mt-1">{method.description}</div>
+                          <div className="text-sm text-gray-700 mt-1" dangerouslySetInnerHTML={{ __html: method.description }} />
                         )}
                       </div>
                     ))}

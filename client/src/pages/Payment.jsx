@@ -89,7 +89,7 @@ const Payment = () => {
                        <div className="flex-1">
                          <div className="font-medium text-gray-900">{method.name}</div>
                          {method.description && (
-                           <div className="text-xs text-gray-700 line-clamp-1">{method.description.replace(/<[^>]*>/g, '')}</div>
+                           <div className="text-xs text-gray-700 line-clamp-1" dangerouslySetInnerHTML={{ __html: method.description }} />
                          )}
                        </div>
                        <span className="text-primary text-lg">→</span>
