@@ -4,7 +4,7 @@ import { FiHome, FiGrid, FiCalendar, FiSettings, FiUser, FiLogOut, FiChevronLeft
 import { useAuthStore } from '../store/useStore';
 import { useSettingsStore } from '../store/settingsStore';
 import { getSettings } from '../services/settingsService';
-import NotificationDropdown from './NotificationDropdown';
+// import NotificationDropdown from './NotificationDropdown';
 
 const AdminLayout = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -108,7 +108,7 @@ const AdminLayout = () => {
             <h1 className="text-xl font-semibold text-gray-900">Admin Dashboard</h1>
           </div>
           <div className="flex items-center gap-4">
-            <NotificationDropdown />
+            {/* <NotificationDropdown /> */}
           </div>
         </div>
 

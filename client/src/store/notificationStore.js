@@ -1,5 +1,4 @@
-import { create } from 'zustand';
-import { notificationService } from '../services/notificationService';
+import { create } from 'zustand'
 
 export const useNotificationStore = create((set, get) => ({
   notifications: [],
@@ -7,52 +6,42 @@ export const useNotificationStore = create((set, get) => ({
   loading: false,
 
   fetchNotifications: async () => {
-    set({ loading: true });
+    set({ loading: true })
     try {
-      const res = await notificationService.getAll();
-      set({ notifications: res.data || [] });
+      set({ notifications: [] })
     } catch (error) {
-      console.error('Error fetching notifications:', error);
+      console.error('Error fetching notifications:', error)
     } finally {
-      set({ loading: false });
+      set({ loading: false })
     }
   },
 
   fetchUnreadCount: async () => {
     try {
-      const res = await notificationService.getUnreadCount();
-      set({ unreadCount: res.data?.count || 0 });
+      set({ unreadCount: 0 })
     } catch (error) {
-      console.error('Error fetching unread count:', error);
+      console.error('Error fetching unread count:', error)
     }
   },
 
   markAsRead: async (id) => {
     try {
-      await notificationService.markAsRead(id);
       const notifications = get().notifications.map(n =>
         n.id === id ? { ...n, is_read: true } : n
-      );
-      const unreadCount = notifications.filter(n => !n.is_read).length;
-      set({ notifications, unreadCount });
+      )
+      const unreadCount = notifications.filter(n => !n.is_read).length
+      set({ notifications, unreadCount })
     } catch (error) {
-      console.error('Error marking notification as read:', error);
+      console.error('Error marking notification as read:', error)
     }
   },
 
   markAllAsRead: async () => {
     try {
-      await notificationService.markAllAsRead();
-      const notifications = get().notifications.map(n => ({ ...n, is_read: true }));
-      set({ notifications, unreadCount: 0 });
+      const notifications = get().notifications.map(n => ({ ...n, is_read: true }))
+      set({ notifications, unreadCount: 0 })
     } catch (error) {
-      console.error('Error marking all notifications as read:', error);
+      console.error('Error marking all notifications as read:', error)
     }
-  },
-
-  addNotification: (notification) => {
-    const notifications = [notification, ...get().notifications];
-    const unreadCount = notifications.filter(n => !n.is_read).length;
-    set({ notifications, unreadCount });
-  },
-}));
+  }
+}))
