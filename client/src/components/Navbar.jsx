@@ -14,7 +14,7 @@ const Navbar = ({ scrolled = false }) => {
   const { currency, symbol, setCurrency } = useCurrencyStore();
 
   const languages = [
-    { code: 'EN', flag: '🇺🇸', name: 'English' },
+    { code: 'EN', flag: '🇬🇧', name: 'English' },
     { code: 'ES', flag: '🇪🇸', name: 'Español' },
     { code: 'FR', flag: '🇫🇷', name: 'Français' },
     { code: 'DE', flag: '🇩🇪', name: 'Deutsch' },
