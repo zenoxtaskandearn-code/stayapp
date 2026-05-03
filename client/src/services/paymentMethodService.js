@@ -1,31 +1,16 @@
 import api from './api';
 
+const API = '/api/payment-methods';
+
 export const paymentMethodService = {
-  // Get all active payment methods (public)
-  getAll: () => api.get('/payment-methods'),
-  
-  // Get single payment method by ID (public)
-  getById: (id) => api.get(`/payment-methods/${id}`),
-  
-  // Admin: Get all payment methods (including inactive)
-  getAllAdmin: () => api.get('/payment-methods/admin'),
-  
-  // Admin: Get payment method by ID
-  getByIdAdmin: (id) => api.get(`/payment-methods/admin/${id}`),
-  
-  // Admin: Create payment method
-  create: (data) => api.post('/payment-methods/admin', data),
-  
-  // Admin: Update payment method
-  update: (id, data) => api.put(`/payment-methods/admin/${id}`, data),
-  
-  // Admin: Delete payment method
-  delete: (id) => api.delete(`/payment-methods/admin/${id}`),
-  
-  // Get payment methods for a property
-  getForProperty: (propertyId) => api.get(`/payment-methods/property/${propertyId}`),
-  
-  // Update payment methods for a property
+  getAll: () => api.get(API),
+  getById: (id) => api.get(`${API}/${id}`),
+  getAllAdmin: () => api.get(`${API}/admin`),
+  getByIdAdmin: (id) => api.get(`${API}/admin/${id}`),
+  create: (data) => api.post(`${API}/admin`, data),
+  update: (id, data) => api.put(`${API}/admin/${id}`, data),
+  delete: (id) => api.delete(`${API}/admin/${id}`),
+  getForProperty: (propertyId) => api.get(`${API}/property/${propertyId}`),
   updateForProperty: (propertyId, paymentMethodIds) => 
-    api.put(`/payment-methods/property/${propertyId}`, { payment_method_ids: paymentMethodIds }),
+    api.put(`${API}/property/${propertyId}`, { payment_method_ids: paymentMethodIds }),
 };

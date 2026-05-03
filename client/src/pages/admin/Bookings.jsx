@@ -43,7 +43,9 @@ const AdminBookings = () => {
 
   const fetchPaymentMethods = async () => {
     try {
-      const res = await fetch('http://localhost:5001/api/payment-methods/admin');
+      const isProd = window.location.hostname !== 'localhost';
+      const baseURL = isProd ? '/api' : 'http://localhost:5001/api';
+      const res = await fetch(`${baseURL}/payment-methods/admin`);
       const data = await res.json();
       setPaymentMethods(data || []);
     } catch (e) {
