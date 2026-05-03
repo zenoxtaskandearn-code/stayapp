@@ -10,7 +10,7 @@ const About = () => {
           viewport={{ once: true }}
           className="max-w-3xl mx-auto text-center"
         >
-          <h1 className="heading-section mb-6">About StayFinder</h1>
+          <h1 className="heading-section mb-6">About The Blueground</h1>
           <p className="text-lg text-gray-600 mb-8">
             We are dedicated to helping you find the perfect rental property. Our platform connects
             property owners with tenants, making the rental process seamless and efficient.
@@ -55,7 +55,7 @@ const About = () => {
               allowFullScreen=""
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="StayFinder Locations"
+              title="The Blueground Locations"
             />
           </div>
         </motion.div>

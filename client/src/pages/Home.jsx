@@ -211,7 +211,7 @@ const Home = () => {
               <div>
                 <span className="text-primary text-xs font-bold uppercase tracking-widest">About Us</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2 mb-6">Your Home Away From Home</h2>
-                <p className="text-gray-600 text-lg leading-relaxed mb-5">StayFinder was founded with a simple mission: to make finding premium rental accommodations as seamless and enjoyable as possible. We believe that where you live should enhance your life, not complicate it.</p>
+                <p className="text-gray-600 text-lg leading-relaxed mb-5">The Blueground was founded with a simple mission: to make finding premium rental accommodations as seamless and enjoyable as possible. We believe that where you live should enhance your life, not complicate it.</p>
                 <p className="text-gray-600 text-lg leading-relaxed mb-10">Our curated collection of furnished apartments spans the world's most desirable cities, each one selected for its quality, location, and ability to feel like home.</p>
                 <div className="flex gap-10">
                   <div><span className="text-4xl font-bold text-primary">15K+</span><p className="text-gray-500 font-medium">Properties</p></div>
@@ -236,7 +236,7 @@ const Home = () => {
           <div className="bg-gray-50 rounded-3xl p-10 md:p-14">
             <div className="text-center mb-12">
               <span className="text-primary text-xs font-bold uppercase tracking-widest">Why Choose Us</span>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2">The StayFinder Difference</h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2">The Blueground Difference</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[{ icon: FiShield, title: 'Secure Booking', desc: 'Your payments are protected with enterprise-grade security' }, { icon: FiClock, title: 'Flexible Terms', desc: 'Stay for a month, a year, or whenever you need' }, { icon: FiHeart, title: 'Premium Comfort', desc: 'Designer furnished apartments in prime locations' }, { icon: FiAward, title: 'Quality Assured', desc: 'Every property verified and inspected for your peace of mind' }].map((feature, i) => (

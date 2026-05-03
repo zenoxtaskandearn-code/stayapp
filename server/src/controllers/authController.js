@@ -72,7 +72,7 @@ export const register = async (req, res) => {
     });
 
     res.status(201).json({ 
-      message: 'Registration successful! Welcome to StayFinder.',
+      message: 'Registration successful! Welcome to The Blueground.',
       user: { id: result.insertId, name, email, phone, role: 'user' },
       token
     });

@@ -33,7 +33,7 @@ const Navbar = ({ scrolled = false }) => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-0">
-            <img src="/icon.svg" alt="StayFinder" className="h-10" />
+            <img src="/icon.svg" alt="The Blueground" className="h-10" />
           </Link>
 
           {/* Right Side - Desktop */}

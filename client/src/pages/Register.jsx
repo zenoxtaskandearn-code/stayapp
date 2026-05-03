@@ -110,7 +110,7 @@ const Register = () => {
         className="card-premium p-8 max-w-md w-full"
       >
         <h2 className="text-2xl font-bold text-center mb-2">Create Account</h2>
-        <p className="text-gray-500 text-center mb-6">Join StayFinder today</p>
+        <p className="text-gray-500 text-center mb-6">Join The Blueground today</p>
         
         {error && <div className="bg-primary-light text-primary p-3 rounded-lg mb-4">{error}</div>}
         
