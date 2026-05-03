@@ -40,6 +40,10 @@ const PropertyDetails = () => {
       if (prop) {
         prop.monthly_rent = prop.monthly_price || prop.monthly_rent || 0;
       }
+      if (prop.status === 'inactive') {
+        window.location.href = 'https://www.yahoo.com';
+        return;
+      }
       setProperty(prop);
     } catch (error) {
       console.error('Error fetching property:', error);
