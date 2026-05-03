@@ -44,9 +44,11 @@ const Payment = () => {
 
   const handleViewInstructions = async (methodId) => {
     try {
-      const res = await paymentMethodService.getById(methodId);
-      setMethodDetails(res.data);
       setSelectedMethod(methodId);
+      // Fetch fresh method details
+      const res = await fetch(`/api/payment-methods/${methodId}`);
+      const data = await res.json();
+      setMethodDetails(data);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -75,7 +77,11 @@ const Payment = () => {
 
 <h3 className="text-lg font-semibold mb-4">Select Payment Method</h3>
                
-               {booking.payment_methods?.length > 0 && (
+               {(!booking.payment_methods || booking.payment_methods.length === 0) ? (
+                 <div className="text-gray-500 text-sm">
+                   No payment methods available for this booking.
+                 </div>
+               ) : (
                  <div className="space-y-3">
                    {booking.payment_methods.map((method) => (
                      <button
@@ -96,7 +102,7 @@ const Payment = () => {
                      </button>
                    ))}
                  </div>
-              )}
+               )}
 
               <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
                 <h4 className="font-semibold text-yellow-800 mb-2">Reservation Notice</h4>
