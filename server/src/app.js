@@ -22,21 +22,48 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Security middleware
+// ==========================================
+// 🔧 AUTO DATABASE SCHEMA SYNC
+// Runs on startup to ensure all columns exist
+// ==========================================
+const syncDatabase = async () => {
+  try {
+    console.log('🔧 Checking database schema...');
+    
+    // Users Table Updates
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(20) AFTER email`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token VARCHAR(255) AFTER is_verified`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_expires DATETIME AFTER reset_token`);
+
+    // Properties Table Updates
+    await pool.query(`ALTER TABLE properties ADD COLUMN IF NOT EXISTS map_link TEXT AFTER location`);
+    await pool.query(`ALTER TABLE properties ADD COLUMN IF NOT EXISTS deposit DECIMAL(10,2) DEFAULT 0 AFTER monthly_price`);
+
+    // Bookings Table Updates
+    await pool.query(`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS currency VARCHAR(3) DEFAULT 'USD' AFTER total_amount`);
+
+    // Payments Table Updates
+    await pool.query(`ALTER TABLE payments ADD COLUMN IF NOT EXISTS screenshot VARCHAR(255) AFTER status`);
+    await pool.query(`ALTER TABLE payments ADD COLUMN IF NOT EXISTS admin_notes TEXT AFTER screenshot`);
+
+    console.log('✅ Database schema is up to date!');
+  } catch (error) {
+    console.log('⚠️  Schema sync note:', error.message);
+  }
+};
+
+// Run sync before starting server
+syncDatabase();
+
+// ==========================================
+// MIDDLEWARE
+// ==========================================
 app.use(helmet());
 app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:5173',
   credentials: true,
 }));
 
-// Rate limiting - disabled for development
-// const limiter = rateLimit({
-//   windowMs: 15 * 60 * 1000,
-//   max: 100,
-// });
-// app.use(limiter);
-
-// Body parser
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cookieParser());
