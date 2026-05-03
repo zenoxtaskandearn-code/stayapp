@@ -28,7 +28,7 @@ const AdminProperties = () => {
   const fileInputRef = useRef(null);
   const [displayCurrency, setDisplayCurrency] = useState('USD');
   const [formData, setFormData] = useState({
-    title: '', location: '', description: '', map_link: '', monthly_price: '', deposit: '', bedrooms: '', bathrooms: '', square_feet: '', property_type: '', category_id: '', status: 'active', amenities: [], images: [], payment_method_ids: []
+    title: '', location: '', description: '', map_link: '', monthly_price: '', deposit: '', bedrooms: '', bathrooms: '', square_feet: '', property_type: '', category_id: '', status: 'available', amenities: [], images: [], payment_method_ids: []
   });
 
   const displaySymbol = currencyOptions.find((c) => c.code === displayCurrency)?.symbol || '$';
@@ -112,7 +112,7 @@ const AdminProperties = () => {
         square_feet: property.square_feet || '',
         property_type: property.property_type || '',
         category_id: property.category_id || '',
-        status: property.status || 'active',
+        status: property.status || 'available',
         amenities: typeof property.amenities === 'string' ? JSON.parse(property.amenities) : (property.amenities || []),
         images: property.images || [],
         payment_method_ids: selectedPaymentIds,
@@ -120,7 +120,7 @@ const AdminProperties = () => {
     } else {
       setEditProperty(null);
       setFormData({
-        title: '', location: '', description: '', map_link: '', monthly_price: '', deposit: '', bedrooms: '', bathrooms: '', square_feet: '', property_type: '', category_id: '', status: 'active', amenities: [], images: [], payment_method_ids: []
+        title: '', location: '', description: '', map_link: '', monthly_price: '', deposit: '', bedrooms: '', bathrooms: '', square_feet: '', property_type: '', category_id: '', status: 'available', amenities: [], images: [], payment_method_ids: []
       });
     }
     setShowModal(true);
@@ -165,13 +165,14 @@ const AdminProperties = () => {
         title: formData.title,
         description: formData.description || '',
         location: formData.location,
-        monthly_price: parseFloat(formData.monthly_price),
+        monthly_price: parseFloat(formData.monthly_price) || 0,
         deposit: formData.deposit ? parseFloat(formData.deposit) : 0,
-        bedrooms: formData.bedrooms || 0,
-        bathrooms: formData.bathrooms || 0,
-        square_feet: formData.square_feet || 0,
+        bedrooms: parseInt(formData.bedrooms) || 0,
+        bathrooms: parseInt(formData.bathrooms) || 0,
+        square_feet: parseInt(formData.square_feet) || 0,
         property_type: formData.property_type || 'apartment',
-        category_id: formData.category_id || null,
+        category_id: formData.category_id ? parseInt(formData.category_id) : null,
+        status: formData.status || 'available',
         amenities: formData.amenities || [],
         images: formData.images || [],
         map_link: formData.map_link || null,
@@ -280,7 +281,7 @@ const AdminProperties = () => {
                   <span>{property.square_feet} sqft</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${property.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>{property.status || 'active'}</span>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${property.status === 'available' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>{property.status || 'available'}</span>
                   <div className="flex gap-2">
                     <button onClick={() => openModal(property)} className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200"><FiEdit size={14} /></button>
                     <button onClick={() => handleDelete(property.id)} className="p-2 rounded-lg bg-primary-light text-primary hover:bg-primary/20"><FiTrash2 size={14} /></button>
@@ -365,7 +366,7 @@ const AdminProperties = () => {
                     </select>
                   </div>
                   <div><label className="block text-sm font-medium text-gray-700 mb-1">Square Feet</label><input type="number" value={formData.square_feet} onChange={(e) => setFormData({...formData, square_feet: e.target.value})} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" /></div>
-                  <div><label className="block text-sm font-medium text-gray-700 mb-1">Status</label><select value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+                  <div><label className="block text-sm font-medium text-gray-700 mb-1">Status</label><select value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"><option value="available">Available</option><option value="inactive">Inactive</option></select></div>
                 </div>
               </div>
 
