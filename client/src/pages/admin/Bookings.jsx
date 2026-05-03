@@ -91,6 +91,20 @@ const AdminBookings = () => {
     }
   };
 
+  const handleDeleteBooking = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this booking? This action cannot be undone.')) {
+      return;
+    }
+    try {
+      await bookingService.deleteBooking(id);
+      fetchBookings();
+      setSelectedBooking(null);
+    } catch (error) {
+      console.error('Error deleting booking:', error);
+      alert('Error deleting booking. Please try again.');
+    }
+  };
+
   const filteredBookings = bookings.filter(b => {
     const matchesFilter = filter === 'all' || b.booking_status === filter;
     const matchesSearch = !search || 
@@ -231,6 +245,9 @@ const AdminBookings = () => {
                           </button>
                         </>
                       )}
+                      <button onClick={() => handleDeleteBooking(booking.id)} className="px-4 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 font-medium text-sm">
+                        <FiX size={16} /> Delete
+                      </button>
                     </div>
                   </div>
                 </motion.div>
@@ -397,6 +414,9 @@ const AdminBookings = () => {
                   </button>
                 </div>
               )}
+              <button onClick={() => handleDeleteBooking(selectedBooking.id)} className="w-full py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 font-semibold flex items-center justify-center gap-2 mt-4">
+                <FiX /> Delete Booking
+              </button>
             </motion.div>
           </motion.div>
         )}

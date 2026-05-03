@@ -7,4 +7,5 @@ export const bookingService = {
   getAllBookings: () => api.get('/bookings'),
   updateBookingStatus: (id, status) => api.put(`/bookings/${id}/status`, { status }),
   updateBooking: (id, data) => api.put(`/bookings/${id}`, data),
+  deleteBooking: (id) => api.delete(`/bookings/${id}`),
 };

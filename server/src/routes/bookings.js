@@ -7,6 +7,7 @@ import {
   getBookingById,
   updateBookingStatus,
   updateBooking,
+  deleteBooking,
 } from '../controllers/bookingController.js';
 
 const router = express.Router();
@@ -17,5 +18,6 @@ router.get('/:id', authenticate, getBookingById);
 router.get('/', authenticate, authorize('admin'), getAllBookings);
 router.put('/:id/status', authenticate, authorize('admin'), updateBookingStatus);
 router.put('/:id', authenticate, updateBooking);
+router.delete('/:id', authenticate, authorize('admin'), deleteBooking);
 
 export default router;

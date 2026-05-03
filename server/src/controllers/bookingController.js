@@ -361,3 +361,31 @@ export const updateBooking = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const deleteBooking = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Get current booking to check ownership
+    const [current] = await pool.query('SELECT * FROM bookings WHERE id = ?', [id]);
+    if (!current.length) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    // Only allow admins to delete bookings
+    if (req.user?.role !== 'admin') {
+      return res.status(403).json({ message: 'Not authorized to delete bookings' });
+    }
+
+    // Delete associated payment first
+    await pool.query('DELETE FROM payments WHERE booking_id = ?', [id]);
+
+    // Delete the booking
+    await pool.query('DELETE FROM bookings WHERE id = ?', [id]);
+
+    res.json({ message: 'Booking deleted successfully' });
+  } catch (error) {
+    console.error('Delete error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
