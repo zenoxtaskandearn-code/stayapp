@@ -167,7 +167,7 @@ const AdminPaymentMethods = () => {
                     </div>
 
                     {method.description && (
-                      <p className="text-sm text-gray-600 mb-3">{method.description}</p>
+                      <p className="text-sm text-gray-600 mb-3" dangerouslySetInnerHTML={{ __html: method.description }} />
                     )}
 
                     {method.instructions && (
@@ -216,28 +216,29 @@ const AdminPaymentMethods = () => {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+<div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Description (HTML Allowed)</label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows={3}
                     className="input-premium w-full resize-none"
-                    placeholder="Brief description of this payment method"
+                    placeholder="<p>Fast and secure payment method</p>"
                   />
+                  <p className="text-xs text-gray-500 mt-1">You can use HTML tags like &lt;b&gt;, &lt;br/&gt;</p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Instructions (HTML Allowed)
                   </label>
-<textarea
-                      value={formData.instructions}
-                      onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
-                      rows={6}
-                      className="input-premium w-full"
-                      placeholder="<p><b>Bank Transfer Details:</b></p><p>Account: 1234567890</p><p>Sort Code: 00-00-00</p>"
-                    />
+                  <textarea
+                    value={formData.instructions}
+                    onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
+                    rows={6}
+                    className="input-premium w-full"
+                    placeholder="<p><b>Bank Transfer Details:</b></p><p>Account: 1234567890</p><p>Sort Code: 00-00-00</p>"
+                  />
                   <p className="text-xs text-gray-500 mt-1">
                     You can use HTML tags like &lt;b&gt;, &lt;br/&gt;, &lt;a&gt; for formatting.
                   </p>

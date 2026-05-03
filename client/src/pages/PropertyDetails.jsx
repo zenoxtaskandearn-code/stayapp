@@ -147,7 +147,7 @@ const PropertyDetails = () => {
                         <div className="min-w-0">
                           <p className="text-sm font-semibold text-gray-900 truncate">{method.name}</p>
                           {method.description && (
-                            <p className="text-xs text-gray-500 truncate">{method.description}</p>
+                            <p className="text-xs text-gray-500 truncate" dangerouslySetInnerHTML={{ __html: method.description }} />
                           )}
                         </div>
                       </div>

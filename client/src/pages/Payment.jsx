@@ -75,7 +75,7 @@ const Payment = () => {
                           <h5 className="font-medium text-gray-900">{method.name}</h5>
                         </div>
                         {method.description && (
-                          <p className="text-xs text-gray-500">{method.description}</p>
+                          <p className="text-xs text-gray-500" dangerouslySetInnerHTML={{ __html: method.description }} />
                         )}
                         {method.instructions && (
                           <div className="mt-2 text-sm text-gray-700" dangerouslySetInnerHTML={{ __html: method.instructions }} />
