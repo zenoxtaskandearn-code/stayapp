@@ -300,7 +300,8 @@ do_test "10.6" "PUT" "/bookings/${BOOKING_ID}/status" "Approve Booking" "200" \
 # ---- Phase 11: Payments ----
 echo -e "\n${CYAN}=== Phase 11: Payments ===${NC}"
 
-PAYMENT_ID=$(sudo mysql -u root -s -N -e "USE rental_property; SELECT id FROM payments WHERE booking_id=${BOOKING_ID} LIMIT 1;" 2>/dev/null)
+PAYMENT_ID=$(curl -s "${BASE_URL}/bookings/${BOOKING_ID}" \
+  -H "Authorization: Bearer ${USER_TOKEN}" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('payment',{}).get('id',''))" 2>/dev/null)
 echo -e "  Payment ID: ${PAYMENT_ID}"
 
 if [ -n "$PAYMENT_ID" ]; then

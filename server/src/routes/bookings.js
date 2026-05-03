@@ -10,11 +10,10 @@ import {
 
 const router = express.Router();
 
-// Temp: no auth for testing
-router.post('/', createBooking);
-router.get('/my', getMyBookings);
-router.get('/:id', getBookingById);
-router.get('/', getAllBookings);
-router.put('/:id/status', updateBookingStatus);
+router.post('/', authenticate, createBooking);
+router.get('/my', authenticate, getMyBookings);
+router.get('/:id', authenticate, getBookingById);
+router.get('/', authenticate, authorize('admin'), getAllBookings);
+router.put('/:id/status', authenticate, authorize('admin'), updateBookingStatus);
 
 export default router;
