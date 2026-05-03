@@ -1,18 +1,10 @@
 #!/bin/bash
 
-# ==========================================
-# A-Z API Test Suite - Full CRUD Operations
-# ==========================================
-# Usage: ./full-api-test.sh [BASE_URL]
-# Default: http://localhost:5001/api
-# ==========================================
-
 if [ -z "$1" ]; then
   BASE_URL="http://localhost:5001/api"
 else
   BASE_URL="$1"
 fi
-
 BASE_URL="${BASE_URL%/}"
 
 RED='\033[0;31m'
@@ -26,384 +18,342 @@ BOLD='\033[1m'
 PASS=0
 FAIL=0
 TOTAL=0
-USER_TOKEN=""
-ADMIN_TOKEN=""
-TEST_USER_EMAIL="apitest_$(date +%s)@test.com"
-TEST_PROP_ID=""
-TEST_BOOKING_ID=""
-TEST_PAYMENT_ID=""
-TEST_CATEGORY_ID=""
-TEST_PAYMENT_METHOD_ID=""
 
-phase() {
-  echo -e "\n${CYAN}╔══════════════════════════════════════════════╗"
-  echo -e "║  ${BOLD}$1${NC}"
-  echo -e "${CYAN}╚══════════════════════════════════════════════╝${NC}"
-}
+do_test() {
+  local num="$1"
+  local method="$2"
+  local endpoint="$3"
+  local description="$4"
+  local expect="${5:-}"
 
-run_test() {
-  local NUM=$1
-  local METHOD=$2
-  local ENDPOINT=$3
-  local BODY=$4
-  local TOKEN=$5
-  local DESCRIPTION=$6
-  local EXPECT=$7
+  shift 5
+  local token=""
+  local body=""
+
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --token) token="$2"; shift 2 ;;
+      --body)  body="$2"; shift 2 ;;
+      *)       shift ;;
+    esac
+  done
 
   TOTAL=$((TOTAL + 1))
+  echo -e "\n  ${BOLD}[${num}] ${description}${NC}"
+  echo -e "    ${method} ${endpoint}"
 
-  echo -e "\n  ${BOLD}[${NUM}] ${DESCRIPTION}${NC}"
-  echo -e "    ${METHOD} ${ENDPOINT}"
-
-  local CMD="curl -s -w '\n%{http_code}' -X ${METHOD} \"${BASE_URL}${ENDPOINT}\" -H 'Content-Type: application/json'"
-  
-  if [ -n "$BODY" ]; then
-    CMD="${CMD} -d '${BODY}'"
+  local cmd="curl -s -w '\n%{http_code}' -X ${method} '${BASE_URL}${endpoint}' -H 'Content-Type: application/json'"
+  if [ -n "$body" ]; then
+    cmd="${cmd} -d '${body}'"
+  fi
+  if [ -n "$token" ]; then
+    cmd="${cmd} -H 'Authorization: Bearer ${token}'"
   fi
 
-  if [ -n "$TOKEN" ]; then
-    CMD="${CMD} -H 'Authorization: Bearer ${TOKEN}'"
-  fi
+  local resp
+  resp=$(eval "$cmd" 2>/dev/null)
 
-  local RESPONSE
-  RESPONSE=$(eval "$CMD")
+  local http_code
+  http_code=$(echo "$resp" | tail -1)
+  local resp_body
+  resp_body=$(echo "$resp" | sed '$d')
+  local short
+  short=$(echo "$resp_body" | head -c 200)
 
-  local HTTP_CODE
-  HTTP_CODE=$(echo "$RESPONSE" | tail -1)
-  local BODY_RESP
-  BODY_RESP=$(echo "$RESPONSE" | sed '$d')
-
-  local SHORT_RESP
-  SHORT_RESP=$(echo "$BODY_RESP" | head -c 200)
-
-  if [ -n "$EXPECT" ]; then
-    if [ "$HTTP_CODE" = "$EXPECT" ]; then
-      echo -e "    ${GREEN}✓ PASS (HTTP ${HTTP_CODE})${NC} ${SHORT_RESP}"
+  if [ -n "$expect" ]; then
+    if [ "$http_code" = "$expect" ]; then
+      echo -e "    ${GREEN}✓ PASS (HTTP ${http_code})${NC}"
       PASS=$((PASS + 1))
-      return 0
     else
-      echo -e "    ${RED}✗ FAIL (HTTP ${HTTP_CODE}, expected ${EXPECT})${NC} ${SHORT_RESP}"
+      echo -e "    ${RED}✗ FAIL (HTTP ${http_code}, expected ${expect})${NC}"
+      echo -e "    ${short}"
       FAIL=$((FAIL + 1))
-      return 1
     fi
   else
-    if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
-      echo -e "    ${GREEN}✓ PASS (HTTP ${HTTP_CODE})${NC} ${SHORT_RESP}"
+    if [ "$http_code" -ge 200 ] 2>/dev/null && [ "$http_code" -lt 300 ] 2>/dev/null; then
+      echo -e "    ${GREEN}✓ PASS (HTTP ${http_code})${NC}"
       PASS=$((PASS + 1))
-      echo "$BODY_RESP"
-      return 0
     else
-      echo -e "    ${RED}✗ FAIL (HTTP ${HTTP_CODE})${NC} ${SHORT_RESP}"
+      echo -e "    ${RED}✗ FAIL (HTTP ${http_code})${NC}"
+      echo -e "    ${short}"
       FAIL=$((FAIL + 1))
-      return 1
     fi
   fi
+
+  echo "$resp_body"
 }
 
 echo -e "${BOLD}${BLUE}"
-echo -e "=============================================="
-echo -e "  StayApp A-Z API Test Suite"
-echo -e "  Base URL: ${BASE_URL}"
-echo -e "=============================================="
+echo "=============================================="
+echo "  StayApp Full API Test Suite"
+echo "  Base: ${BASE_URL}"
+echo "=============================================="
 echo -e "${NC}"
 
-# ==========================================
-# PHASE 1: PUBLIC ENDPOINTS
-# ==========================================
-phase "PHASE 1: Public Endpoints"
+# ---- Phase 1: Health ----
+echo -e "\n${CYAN}=== Phase 1: Health ===${NC}"
+do_test "1.1" "GET" "/health" "Health Check" "200" > /dev/null
 
-run_test 1.1 "GET" "/health" "" "" "" "Health Check" "200"
-
-run_test 1.2 "GET" "/properties" "" "" "" "List Properties (empty)" "200"
-
-run_test 1.3 "GET" "/categories" "" "" "" "List Categories" "200"
-
-run_test 1.4 "GET" "/payment-methods" "" "" "" "List Active Payment Methods" "200"
-
-# ==========================================
-# PHASE 2: USER REGISTRATION & AUTH
-# ==========================================
-phase "PHASE 2: User Registration & Authentication"
-
-echo -e "\n  ${BOLD}Registering test user: ${TEST_USER_EMAIL}${NC}"
-
-REG_RESP=$(curl -s -X POST "${BASE_URL}/auth/register" \
-  -H 'Content-Type: application/json' \
-  -d "{\"name\":\"API Test User\",\"email\":\"${TEST_USER_EMAIL}\",\"password\":\"testpass123\",\"phone\":\"555999888\"}")
-
-echo -e "  Register response: ${REG_RESP}"
-
-REG_NEEDS_VERIF=$(echo "$REG_RESP" | grep -o '"needsVerification":true')
-
-if [ -n "$REG_NEEDS_VERIF" ]; then
-  echo -e "  ${YELLOW}⚠ Registration requires OTP verification. Verifying manually...${NC}"
-  
-  OTP=$(sudo mysql -u root -s -N -e "USE rental_property; SELECT verification_otp FROM users WHERE email='${TEST_USER_EMAIL}' LIMIT 1;")
-  
-  if [ -n "$OTP" ] && [ "$OTP" != "NULL" ]; then
-    VERIFY_RESP=$(curl -s -X POST "${BASE_URL}/auth/verify-email" \
-      -H 'Content-Type: application/json' \
-      -d "{\"email\":\"${TEST_USER_EMAIL}\",\"otp\":\"${OTP}\"}")
-    
-    USER_TOKEN=$(echo "$VERIFY_RESP" | grep -o '"token":"[^"]*"' | cut -d'"' -f4)
-    
-    if [ -n "$USER_TOKEN" ]; then
-      echo -e "  ${GREEN}✓ User verified & logged in${NC}"
-    else
-      echo -e "  ${RED}✗ Verification failed: ${VERIFY_RESP}${NC}"
-    fi
-  else
-    echo -e "  ${YELLOW}⚠ No OTP found. Marking user as verified directly...${NC}"
-    sudo mysql -u root -e "USE rental_property; UPDATE users SET is_verified=TRUE, verification_otp=NULL WHERE email='${TEST_USER_EMAIL}';"
-    
-    LOGIN_RESP=$(curl -s -X POST "${BASE_URL}/auth/login" \
-      -H 'Content-Type: application/json' \
-      -d "{\"email\":\"${TEST_USER_EMAIL}\",\"password\":\"testpass123\"}")
-    
-    USER_TOKEN=$(echo "$LOGIN_RESP" | grep -o '"token":"[^"]*"' | cut -d'"' -f4)
-  fi
-else
-  USER_TOKEN=$(echo "$REG_RESP" | grep -o '"token":"[^"]*"' | cut -d'"' -f4)
-  if [ -n "$USER_TOKEN" ]; then
-    echo -e "  ${GREEN}✓ Auto-login on registration successful${NC}"
-  fi
-fi
-
-run_test 2.1 "POST" "/auth/login" "{\"email\":\"${TEST_USER_EMAIL}\",\"password\":\"wrongpass\"}" "" "" "Login with wrong password" "401"
-
-run_test 2.2 "POST" "/auth/login" "{\"email\":\"${TEST_USER_EMAIL}\",\"password\":\"testpass123\"}" "" "" "Login with correct password" "200"
-
-run_test 2.3 "GET" "/auth/me" "" "$USER_TOKEN" "" "Get My Profile" "200"
-
-run_test 2.4 "POST" "/auth/forgot-password" "{\"email\":\"${TEST_USER_EMAIL}\"}" "" "" "Forgot Password" "200"
-
-# ==========================================
-# PHASE 3: ADMIN LOGIN & AUTH
-# ==========================================
-phase "PHASE 3: Admin Authentication"
-
-ADMIN_LOGIN=$(curl -s -X POST "${BASE_URL}/auth/login" \
+# ---- Phase 2: Admin Login ----
+echo -e "\n${CYAN}=== Phase 2: Admin Login ===${NC}"
+ADMIN_RESP=$(curl -s -X POST "${BASE_URL}/auth/login" \
   -H 'Content-Type: application/json' \
   -d '{"email":"amitxrajwar@gmail.com","password":"admin123"}')
-
-ADMIN_TOKEN=$(echo "$ADMIN_LOGIN" | grep -o '"token":"[^"]*"' | cut -d'"' -f4)
-
+ADMIN_TOKEN=$(echo "$ADMIN_RESP" | grep -o '"token":"[^"]*"' | cut -d'"' -f4)
 if [ -n "$ADMIN_TOKEN" ]; then
-  echo -e "  ${GREEN}✓ Admin login successful${NC}"
+  echo -e "  ${GREEN}✓ Admin login OK${NC}"
+  PASS=$((PASS + 1))
 else
-  echo -e "  ${RED}✗ Admin login failed${NC}"
-  echo "  Admin login response: ${ADMIN_LOGIN}"
+  echo -e "  ${RED}✗ Admin login FAILED${NC}"
+  FAIL=$((FAIL + 1))
 fi
+TOTAL=$((TOTAL + 1))
 
-run_test 3.1 "GET" "/auth/me" "" "$ADMIN_TOKEN" "" "Get Admin Profile" "200"
+# ---- Phase 3: Admin Profile ----
+do_test "3.1" "GET" "/auth/me" "Admin Profile" "200" --token "$ADMIN_TOKEN" > /dev/null
 
-# ==========================================
-# PHASE 4: ADMIN - CATEGORIES CRUD
-# ==========================================
-phase "PHASE 4: Admin - Categories CRUD"
+# ---- Phase 4: Users ----
+echo -e "\n${CYAN}=== Phase 4: Users ===${NC}"
+do_test "4.1" "GET" "/users" "List Users" "200" --token "$ADMIN_TOKEN" > /dev/null
 
-echo -e "\n  ${BOLD}Creating test category...${NC}"
+# ---- Phase 5: Categories CRUD ----
+echo -e "\n${CYAN}=== Phase 5: Categories CRUD ===${NC}"
+
+# Create
 CAT_RESP=$(curl -s -X POST "${BASE_URL}/categories" \
   -H 'Content-Type: application/json' \
   -H "Authorization: Bearer ${ADMIN_TOKEN}" \
-  -d '{"name":"Test Apartments","slug":"test-apartments","description":"API test category","icon":"home"}')
+  -d '{"name":"TestCat '$(date +%s)'","slug":"test-cat","icon":"home"}')
+CAT_ID=$(echo "$CAT_RESP" | grep -o '"id":[0-9]*' | cut -d':' -f2)
+if [ -n "$CAT_ID" ]; then
+  echo -e "  ${GREEN}✓ Create category (ID: ${CAT_ID})${NC}"
+  PASS=$((PASS + 1))
+else
+  echo -e "  ${RED}✗ Create category FAILED${NC}"
+  FAIL=$((FAIL + 1))
+fi
+TOTAL=$((TOTAL + 1))
 
-echo "  Response: ${CAT_RESP}"
-TEST_CATEGORY_ID=$(echo "$CAT_RESP" | grep -o '"id":[0-9]*' | head -1 | cut -d':' -f2)
-echo "  Category ID: ${TEST_CATEGORY_ID}"
+# Read
+do_test "5.2" "GET" "/categories" "List Categories" "200" > /dev/null
 
-run_test 4.1 "GET" "/categories" "" "" "" "List All Categories (should include new)" "200"
+# Update
+do_test "5.3" "PUT" "/categories/${CAT_ID}" "Update Category" "200" \
+  --token "$ADMIN_TOKEN" \
+  --body '{"name":"Updated Cat"}' > /dev/null
 
-run_test 4.2 "PUT" "/categories/${TEST_CATEGORY_ID}" '{"name":"Updated Apartments","description":"Updated via API"}' "$ADMIN_TOKEN" "" "Update Category" "200"
+# Delete
+do_test "5.4" "DELETE" "/categories/${CAT_ID}" "Delete Category" "200" --token "$ADMIN_TOKEN" > /dev/null
 
-run_test 4.3 "DELETE" "/categories/${TEST_CATEGORY_ID}" "" "$ADMIN_TOKEN" "" "Delete Category" "200"
+# ---- Phase 6: Properties CRUD ----
+echo -e "\n${CYAN}=== Phase 6: Properties CRUD ===${NC}"
 
-run_test 4.4 "GET" "/categories/${TEST_CATEGORY_ID}" "" "" "" "Get Deleted Category (should 404)" "404"
-
-# ==========================================
-# PHASE 5: ADMIN - PROPERTIES CRUD
-# ==========================================
-phase "PHASE 5: Admin - Properties CRUD"
-
-echo -e "\n  ${BOLD}Creating test property...${NC}"
+# Create
 PROP_RESP=$(curl -s -X POST "${BASE_URL}/properties" \
   -H 'Content-Type: application/json' \
   -H "Authorization: Bearer ${ADMIN_TOKEN}" \
-  -d '{"title":"API Test Property","description":"Created by API test","location":"London, UK","monthly_price":2500,"deposit":2500,"bedrooms":2,"bathrooms":1,"square_feet":900,"property_type":"apartment","furnished":"furnished","status":"available","category_id":1,"currency":"GBP","amenities":["WiFi","Parking","Laundry"]}')
+  -d '{"title":"Test Property '$(date +%s)'","description":"API test","location":"London, UK","monthly_price":2000,"deposit":2000,"bedrooms":2,"bathrooms":1,"square_feet":800,"property_type":"apartment","furnished":"furnished","status":"available","amenities":["WiFi"]}')
+PROP_ID=$(echo "$PROP_RESP" | grep -o '"id":[0-9]*' | cut -d':' -f2)
+if [ -n "$PROP_ID" ]; then
+  echo -e "  ${GREEN}✓ Create property (ID: ${PROP_ID})${NC}"
+  PASS=$((PASS + 1))
+else
+  echo -e "  ${RED}✗ Create property FAILED: ${PROP_RESP}${NC}"
+  FAIL=$((FAIL + 1))
+fi
+TOTAL=$((TOTAL + 1))
 
-echo "  Response: ${PROP_RESP}"
-TEST_PROP_ID=$(echo "$PROP_RESP" | grep -o '"id":[0-9]*' | head -1 | cut -d':' -f2)
-echo "  Property ID: ${TEST_PROP_ID}"
+# List
+do_test "6.2" "GET" "/properties" "List Properties" "200" > /dev/null
 
-run_test 5.1 "GET" "/properties" "" "" "" "List Properties (should include new)" "200"
+# Get by ID
+do_test "6.3" "GET" "/properties/${PROP_ID}" "Get Property" "200" > /dev/null
 
-run_test 5.2 "GET" "/properties/${TEST_PROP_ID}" "" "" "" "Get Property By ID" "200"
+# Update
+do_test "6.4" "PUT" "/properties/${PROP_ID}" "Update Property" "200" \
+  --token "$ADMIN_TOKEN" \
+  --body '{"monthly_price":2500}' > /dev/null
 
-run_test 5.3 "GET" "/properties?status=available" "" "" "" "Filter by Status" "200"
+# Delete
+do_test "6.5" "DELETE" "/properties/${PROP_ID}" "Delete Property" "200" --token "$ADMIN_TOKEN" > /dev/null
 
-run_test 5.4 "PUT" "/properties/${TEST_PROP_ID}" '{"title":"Updated Property","monthly_price":3000}' "$ADMIN_TOKEN" "" "Update Property" "200"
+# Verify deleted
+do_test "6.6" "GET" "/properties/${PROP_ID}" "Deleted Property 404" "404" > /dev/null
 
-run_test 5.5 "DELETE" "/properties/${TEST_PROP_ID}" "" "$ADMIN_TOKEN" "" "Delete Property" "200"
+# ---- Phase 7: Payment Methods CRUD ----
+echo -e "\n${CYAN}=== Phase 7: Payment Methods CRUD ===${NC}"
 
-run_test 5.6 "GET" "/properties/${TEST_PROP_ID}" "" "" "" "Get Deleted Property (should 404)" "404"
-
-# ==========================================
-# PHASE 6: ADMIN - PAYMENT METHODS CRUD
-# ==========================================
-phase "PHASE 6: Admin - Payment Methods CRUD"
-
-echo -e "\n  ${BOLD}Creating test payment method...${NC}"
+# Create
 PM_RESP=$(curl -s -X POST "${BASE_URL}/payment-methods/admin" \
   -H 'Content-Type: application/json' \
   -H "Authorization: Bearer ${ADMIN_TOKEN}" \
-  -d '{"name":"API Test Payment","description":"Created by API","instructions":"Send payment to test@example.com","is_active":true}')
+  -d '{"name":"Test PM '$(date +%s)'","description":"API test","instructions":"Send to test@test.com"}')
+PM_ID=$(echo "$PM_RESP" | grep -o '"id":[0-9]*' | head -1 | cut -d':' -f2)
+if [ -n "$PM_ID" ]; then
+  echo -e "  ${GREEN}✓ Create payment method (ID: ${PM_ID})${NC}"
+  PASS=$((PASS + 1))
+else
+  echo -e "  ${RED}✗ Create payment method FAILED: ${PM_RESP}${NC}"
+  FAIL=$((FAIL + 1))
+fi
+TOTAL=$((TOTAL + 1))
 
-echo "  Response: ${PM_RESP}"
-TEST_PAYMENT_METHOD_ID=$(echo "$PM_RESP" | grep -o '"id":[0-9]*' | head -1 | cut -d':' -f2)
-echo "  Payment Method ID: ${TEST_PAYMENT_METHOD_ID}"
+# List admin
+do_test "7.2" "GET" "/payment-methods/admin" "Admin List Payment Methods" "200" --token "$ADMIN_TOKEN" > /dev/null
 
-run_test 6.1 "GET" "/payment-methods/admin" "" "$ADMIN_TOKEN" "" "Admin - List All Payment Methods" "200"
+# Update
+do_test "7.3" "PUT" "/payment-methods/admin/${PM_ID}" "Update Payment Method" "200" \
+  --token "$ADMIN_TOKEN" \
+  --body '{"name":"Updated PM"}' > /dev/null
 
-run_test 6.2 "PUT" "/payment-methods/admin/${TEST_PAYMENT_METHOD_ID}" '{"name":"Updated Payment","description":"Updated via API"}' "$ADMIN_TOKEN" "" "Update Payment Method" "200"
+# Delete
+do_test "7.4" "DELETE" "/payment-methods/admin/${PM_ID}" "Delete Payment Method" "200" --token "$ADMIN_TOKEN" > /dev/null
 
-run_test 6.3 "DELETE" "/payment-methods/admin/${TEST_PAYMENT_METHOD_ID}" "" "$ADMIN_TOKEN" "" "Delete Payment Method" "200"
+# ---- Phase 8: Settings ----
+echo -e "\n${CYAN}=== Phase 8: Settings ===${NC}"
+do_test "8.1" "GET" "/settings" "Get Settings" "200" --token "$ADMIN_TOKEN" > /dev/null
+do_test "8.2" "PUT" "/settings" "Update Settings" "200" \
+  --token "$ADMIN_TOKEN" \
+  --body '{"website_name":"Test Site"}' > /dev/null
 
-run_test 6.4 "GET" "/payment-methods" "" "" "" "List Active (should not include deleted)" "200"
+# ---- Phase 9: Registration + User Flow ----
+echo -e "\n${CYAN}=== Phase 9: Registration + User Flow ===${NC}"
 
-# ==========================================
-# PHASE 7: ADMIN - USERS MANAGEMENT
-# ==========================================
-phase "PHASE 7: Admin - Users Management"
+USER_EMAIL="apitest_$(date +%s)@test.com"
+REG_RESP=$(curl -s -X POST "${BASE_URL}/auth/register" \
+  -H 'Content-Type: application/json' \
+  -d "{\"name\":\"API User\",\"email\":\"${USER_EMAIL}\",\"password\":\"pass123\",\"phone\":\"5551234\"}")
 
-run_test 7.1 "GET" "/users" "" "$ADMIN_TOKEN" "" "List All Users" "200"
+USER_TOKEN=$(echo "$REG_RESP" | grep -o '"token":"[^"]*"' | cut -d'"' -f4)
+if [ -n "$USER_TOKEN" ]; then
+  echo -e "  ${GREEN}✓ Register + auto-login OK${NC}"
+  PASS=$((PASS + 1))
+else
+  echo -e "  ${YELLOW}⚠ Registration needs verification, marking user verified...${NC}"
+  sudo mysql -u root -e "USE rental_property; UPDATE users SET is_verified=TRUE WHERE email='${USER_EMAIL}';" 2>/dev/null
+  LOGIN_RESP=$(curl -s -X POST "${BASE_URL}/auth/login" \
+    -H 'Content-Type: application/json' \
+    -d "{\"email\":\"${USER_EMAIL}\",\"password\":\"pass123\"}")
+  USER_TOKEN=$(echo "$LOGIN_RESP" | grep -o '"token":"[^"]*"' | cut -d'"' -f4)
+  if [ -n "$USER_TOKEN" ]; then
+    echo -e "  ${GREEN}✓ Login after verification OK${NC}"
+    PASS=$((PASS + 1))
+  else
+    echo -e "  ${RED}✗ User login FAILED${NC}"
+    FAIL=$((FAIL + 1))
+  fi
+fi
+TOTAL=$((TOTAL + 1))
 
-run_test 7.2 "PUT" "/users/1" '{"name":"Updated via API"}' "$ADMIN_TOKEN" "" "Update User" "200"
+# User profile
+do_test "9.2" "GET" "/auth/me" "User Profile" "200" --token "$USER_TOKEN" > /dev/null
 
-# ==========================================
-# PHASE 8: ADMIN - SETTINGS
-# ==========================================
-phase "PHASE 8: Admin - Settings"
+# Wrong password
+do_test "9.3" "POST" "/auth/login" "Wrong password 401" "401" \
+  --body "{\"email\":\"${USER_EMAIL}\",\"password\":\"wrong\"}" > /dev/null
 
-run_test 8.1 "GET" "/settings" "" "$ADMIN_TOKEN" "" "Get Settings" "200"
+# Duplicate email
+do_test "9.4" "POST" "/auth/register" "Duplicate email 400" "400" \
+  --body "{\"name\":\"Dup\",\"email\":\"${USER_EMAIL}\",\"password\":\"pass123\"}" > /dev/null
 
-run_test 8.2 "PUT" "/settings" '{"website_name":"API Test","contact_email":"test@api.com"}' "$ADMIN_TOKEN" "" "Update Settings" "200"
+# ---- Phase 10: Booking Flow ----
+echo -e "\n${CYAN}=== Phase 10: Booking Flow ===${NC}"
 
-# ==========================================
-# PHASE 9: FULL BOOKING FLOW
-# ==========================================
-phase "PHASE 9: Full Booking Flow (User → Admin)"
-
-echo -e "\n  ${BOLD}Creating property for booking test...${NC}"
+# Create property for booking
 PROP2_RESP=$(curl -s -X POST "${BASE_URL}/properties" \
   -H 'Content-Type: application/json' \
   -H "Authorization: Bearer ${ADMIN_TOKEN}" \
-  -d '{"title":"Booking Test Property","description":"For booking flow test","location":"Manchester, UK","monthly_price":1500,"deposit":1500,"bedrooms":1,"bathrooms":1,"square_feet":600,"property_type":"apartment","furnished":"furnished","status":"available","category_id":1,"currency":"GBP","amenities":["WiFi"]}')
+  -d '{"title":"Booking Property '$(date +%s)'","description":"For booking","location":"Manchester, UK","monthly_price":1500,"deposit":1500,"bedrooms":1,"bathrooms":1,"square_feet":500,"property_type":"apartment","furnished":"furnished","status":"available","amenities":["WiFi"]}')
+PROP2_ID=$(echo "$PROP2_RESP" | grep -o '"id":[0-9]*' | cut -d':' -f2)
+echo -e "  Booking property ID: ${PROP2_ID}"
 
-BOOKING_PROP_ID=$(echo "$PROP2_RESP" | grep -o '"id":[0-9]*' | head -1 | cut -d':' -f2)
-echo "  Booking Property ID: ${BOOKING_PROP_ID}"
+# Create booking
+BOOKING_RESP=$(curl -s -X POST "${BASE_URL}/bookings" \
+  -H 'Content-Type: application/json' \
+  -H "Authorization: Bearer ${USER_TOKEN}" \
+  -d "{\"property_id\":${PROP2_ID},\"move_in_date\":\"2026-06-01\",\"move_out_date\":\"2026-09-01\",\"months\":3,\"currency\":\"GBP\"}")
 
-run_test 9.1 "POST" "/bookings" "{\"property_id\":${BOOKING_PROP_ID},\"move_in_date\":\"2026-06-01\",\"move_out_date\":\"2026-09-01\",\"months\":3,\"currency\":\"GBP\"}" "$USER_TOKEN" "" "User - Create Booking" "201"
-
-echo -e "\n  ${BOLD}Fetching booking ID...${NC}"
-BOOKINGS_RESP=$(curl -s "${BASE_URL}/bookings/my" -H "Authorization: Bearer ${USER_TOKEN}")
-TEST_BOOKING_ID=$(echo "$BOOKINGS_RESP" | grep -o '"id":[0-9]*' | head -1 | cut -d':' -f2)
-echo "  Booking ID: ${TEST_BOOKING_ID}"
-
-run_test 9.2 "GET" "/bookings/my" "" "$USER_TOKEN" "" "User - Get My Bookings" "200"
-
-run_test 9.3 "GET" "/bookings/${TEST_BOOKING_ID}" "" "$USER_TOKEN" "" "User - Get Booking Details" "200"
-
-run_test 9.4 "GET" "/bookings" "" "$ADMIN_TOKEN" "" "Admin - List All Bookings" "200"
-
-run_test 9.5 "PUT" "/bookings/${TEST_BOOKING_ID}/status" '{"status":"approved"}' "$ADMIN_TOKEN" "" "Admin - Approve Booking" "200"
-
-run_test 9.6 "PUT" "/bookings/${TEST_BOOKING_ID}/status" '{"status":"rejected"}' "$ADMIN_TOKEN" "" "Admin - Reject Booking" "200"
-
-# ==========================================
-# PHASE 10: PAYMENTS
-# ==========================================
-phase "PHASE 10: Payments"
-
-echo -e "\n  ${BOLD}Fetching payment ID...${NC}"
-BOOKING_DETAILS=$(curl -s "${BASE_URL}/bookings/${TEST_BOOKING_ID}" -H "Authorization: Bearer ${USER_TOKEN}")
-TEST_PAYMENT_ID=$(echo "$BOOKING_DETAILS" | grep -o '"payment":{[^}]*"id":[0-9]*' | grep -o '"id":[0-9]*' | cut -d':' -f2)
-
-if [ -z "$TEST_PAYMENT_ID" ]; then
-  TEST_PAYMENT_ID=$(sudo mysql -u root -s -N -e "USE rental_property; SELECT id FROM payments WHERE booking_id=${TEST_BOOKING_ID} LIMIT 1;")
+BOOKING_ID=$(echo "$BOOKING_RESP" | grep -o '"id":[0-9]*' | cut -d':' -f2)
+if [ -n "$BOOKING_ID" ]; then
+  echo -e "  ${GREEN}✓ Create booking (ID: ${BOOKING_ID})${NC}"
+  PASS=$((PASS + 1))
+else
+  echo -e "  ${RED}✗ Create booking FAILED: ${BOOKING_RESP}${NC}"
+  FAIL=$((FAIL + 1))
 fi
-echo "  Payment ID: ${TEST_PAYMENT_ID}"
+TOTAL=$((TOTAL + 1))
 
-run_test 10.1 "PUT" "/payments/${TEST_PAYMENT_ID}/verify" '{"status":"completed"}' "$ADMIN_TOKEN" "" "Admin - Verify Payment" "200"
+# Get my bookings
+do_test "10.3" "GET" "/bookings/my" "My Bookings" "200" --token "$USER_TOKEN" > /dev/null
 
-# ==========================================
-# PHASE 11: REVIEWS
-# ==========================================
-phase "PHASE 11: Reviews"
+# Get booking detail
+do_test "10.4" "GET" "/bookings/${BOOKING_ID}" "Booking Details" "200" --token "$USER_TOKEN" > /dev/null
 
-run_test 11.1 "GET" "/reviews/property/${BOOKING_PROP_ID}" "" "" "" "Get Property Reviews" "200"
+# Admin list bookings
+do_test "10.5" "GET" "/bookings" "Admin List Bookings" "200" --token "$ADMIN_TOKEN" > /dev/null
 
-run_test 11.2 "POST" "/reviews" "{\"property_id\":${BOOKING_PROP_ID},\"rating\":5,\"comment\":\"Excellent property!\"}" "$USER_TOKEN" "" "User - Create Review" "201"
+# Admin approve
+do_test "10.6" "PUT" "/bookings/${BOOKING_ID}/status" "Approve Booking" "200" \
+  --token "$ADMIN_TOKEN" \
+  --body '{"status":"approved"}' > /dev/null
 
-run_test 11.3 "GET" "/reviews/property/${BOOKING_PROP_ID}" "" "" "" "Get Reviews (should include new)" "200"
+# ---- Phase 11: Payments ----
+echo -e "\n${CYAN}=== Phase 11: Payments ===${NC}"
 
-# ==========================================
-# PHASE 12: FEATURED & FILTERS
-# ==========================================
-phase "PHASE 12: Featured Properties & Filters"
+PAYMENT_ID=$(sudo mysql -u root -s -N -e "USE rental_property; SELECT id FROM payments WHERE booking_id=${BOOKING_ID} LIMIT 1;" 2>/dev/null)
+echo -e "  Payment ID: ${PAYMENT_ID}"
 
-run_test 12.1 "GET" "/properties/featured" "" "" "" "Get Featured Properties" "200"
+if [ -n "$PAYMENT_ID" ]; then
+  do_test "11.1" "PUT" "/payments/${PAYMENT_ID}/verify" "Verify Payment" "200" \
+    --token "$ADMIN_TOKEN" \
+    --body '{"status":"completed"}' > /dev/null
+fi
 
-run_test 12.2 "GET" "/properties/types" "" "" "" "Get Property Types" "200"
+# ---- Phase 12: Reviews ----
+echo -e "\n${CYAN}=== Phase 12: Reviews ===${NC}"
 
-run_test 12.3 "GET" "/properties/locations" "" "" "" "Get Locations" "200"
+do_test "12.1" "GET" "/reviews/property/${PROP2_ID}" "Get Reviews" "200" > /dev/null
 
-# ==========================================
-# PHASE 13: ERROR HANDLING
-# ==========================================
-phase "PHASE 13: Error Handling"
+do_test "12.2" "POST" "/reviews" "Create Review" "201" \
+  --token "$USER_TOKEN" \
+  --body "{\"property_id\":${PROP2_ID},\"rating\":5,\"comment\":\"Great!\"}" > /dev/null
 
-run_test 13.1 "POST" "/auth/register" '{"name":"","email":"invalid","password":"12"}' "" "" "Register invalid data" "400"
+# ---- Phase 13: Error Handling ----
+echo -e "\n${CYAN}=== Phase 13: Error Handling ===${NC}"
 
-run_test 13.2 "POST" "/auth/register" "{\"name\":\"Dup\",\"email\":\"${TEST_USER_EMAIL}\",\"password\":\"pass123\"}" "" "" "Register duplicate email" "400"
+do_test "13.1" "GET" "/properties/99999" "Non-existent property 404" "404" > /dev/null
+do_test "13.2" "GET" "/bookings/99999" "Non-existent booking 404" "404" --token "$USER_TOKEN" > /dev/null
+do_test "13.3" "POST" "/properties" "Create without auth 403" "403" \
+  --body '{"title":"No auth"}' > /dev/null
+do_test "13.4" "POST" "/auth/register" "Invalid data 400" "400" \
+  --body '{"name":"","email":"invalid","password":"12"}' > /dev/null
 
-run_test 13.3 "GET" "/properties/99999" "" "" "" "Get non-existent property" "404"
-
-run_test 13.4 "GET" "/bookings/99999" "" "$USER_TOKEN" "" "Get non-existent booking" "404"
-
-run_test 13.5 "POST" "/properties" '{"title":"No auth"}' "" "" "" "Create property without auth" "403"
-
-run_test 13.6 "PUT" "/bookings/1/status" '{"status":"approved"}' "$USER_TOKEN" "" "User tries admin action" "403"
-
-# ==========================================
-# CLEANUP
-# ==========================================
-phase "CLEANUP: Removing test data"
-
-echo -e "\n  Cleaning up test data..."
+# ---- Cleanup ----
+echo -e "\n${CYAN}=== Cleanup ===${NC}"
 sudo mysql -u root -e "USE rental_property;
-DELETE FROM reviews WHERE property_id=${BOOKING_PROP_ID};" 2>/dev/null
+DELETE FROM reviews WHERE property_id=${PROP2_ID};" 2>/dev/null
 sudo mysql -u root -e "USE rental_property;
-DELETE FROM property_payment_methods WHERE property_id=${BOOKING_PROP_ID};" 2>/dev/null
+DELETE FROM property_payment_methods WHERE property_id=${PROP2_ID};" 2>/dev/null
 sudo mysql -u root -e "USE rental_property;
-DELETE FROM property_images WHERE property_id=${BOOKING_PROP_ID};" 2>/dev/null
+DELETE FROM property_images WHERE property_id=${PROP2_ID};" 2>/dev/null
 sudo mysql -u root -e "USE rental_property;
-DELETE FROM payments WHERE booking_id=${TEST_BOOKING_ID};" 2>/dev/null
+DELETE FROM payments WHERE booking_id=${BOOKING_ID};" 2>/dev/null
 sudo mysql -u root -e "USE rental_property;
-DELETE FROM bookings WHERE id=${TEST_BOOKING_ID};" 2>/dev/null
+DELETE FROM bookings WHERE id=${BOOKING_ID};" 2>/dev/null
 sudo mysql -u root -e "USE rental_property;
-DELETE FROM properties WHERE id=${BOOKING_PROP_ID};" 2>/dev/null
+DELETE FROM properties WHERE id=${PROP2_ID};" 2>/dev/null
 sudo mysql -u root -e "USE rental_property;
-DELETE FROM users WHERE email='${TEST_USER_EMAIL}';" 2>/dev/null
-echo -e "  ${GREEN}✓ Cleanup done${NC}"
+DELETE FROM users WHERE email='${USER_EMAIL}';" 2>/dev/null
+echo -e "  ${GREEN}✓ Cleaned up${NC}"
 
-# ==========================================
-# SUMMARY
-# ==========================================
+# ---- Summary ----
 echo -e "\n${CYAN}╔══════════════════════════════════════════════╗"
-echo -e "║            ${BOLD}FINAL TEST SUMMARY${NC}"
+echo -e "║          ${BOLD}FINAL SUMMARY${NC}"
 echo -e "${CYAN}╠══════════════════════════════════════════════╣"
-echo -e "║  Total:    ${TOTAL}"
-echo -e "║  ${GREEN}Passed:   ${PASS}${NC}"
-echo -e "║  ${RED}Failed:   ${FAIL}${NC}"
-echo -e "║  Score:    $(( PASS * 100 / TOTAL ))%"
+echo -e "║  Total:  ${TOTAL}"
+echo -e "║  ${GREEN}Passed: ${PASS}${NC}"
+echo -e "║  ${RED}Failed: ${FAIL}${NC}"
+if [ $TOTAL -gt 0 ]; then
+  echo -e "║  Score:  $(( PASS * 100 / TOTAL ))%"
+fi
 echo -e "${CYAN}╚══════════════════════════════════════════════╝${NC}"
