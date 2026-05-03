@@ -126,7 +126,7 @@ run_test "POST" "/auth/verify-email" '{"email":"testuser@example.com","otp":"123
 # Test admin login (credentials from seed)
 ADMIN_LOGIN_RESPONSE=$(curl -s -X POST "${BASE_URL}/auth/login" \
   -H 'Content-Type: application/json' \
-  -d '{"email":"admin@stayapp.com","password":"admin123"}')
+  -d '{"email":"amitxrajwar@gmail.com","password":"admin123"}')
 
 ADMIN_TOKEN=$(echo "$ADMIN_LOGIN_RESPONSE" | grep -o '"token":"[^"]*"' | cut -d'"' -f4)
 
@@ -137,7 +137,7 @@ else
 fi
 
 # Test forgot password
-run_test "POST" "/auth/forgot-password" '{"email":"admin@stayapp.com"}' "" "Forgot Password"
+run_test "POST" "/auth/forgot-password" '{"email":"amitxrajwar@gmail.com"}' "" "Forgot Password"
 
 # ==========================================
 # PHASE 3: User Endpoints (Auth Required)

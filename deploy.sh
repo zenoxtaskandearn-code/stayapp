@@ -118,9 +118,14 @@ sudo systemctl enable nginx 2>/dev/null
 sudo tee /etc/nginx/sites-available/rental-app > /dev/null << EOF
 server {
     listen 80;
+    listen 443 ssl;
     server_name ${DOMAIN};
     root /var/www/html/rental-app;
     index index.html;
+
+    ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
 
     location /api {
         proxy_pass http://localhost:5001;
@@ -141,7 +146,7 @@ EOF
 sudo ln -sf /etc/nginx/sites-available/rental-app /etc/nginx/sites-enabled/
 sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t && sudo systemctl reload nginx
-log_success "Nginx configured and reloaded"
+log_success "Nginx configured with SSL and reloaded"
 
 # 5. Firewall
 sudo ufw allow 80/tcp > /dev/null 2>&1
@@ -150,4 +155,4 @@ sudo ufw allow 443/tcp > /dev/null 2>&1
 echo -e "\n${GREEN}╔══════════════════════════════════════════╗"
 echo -e "║          ✅ DEPLOYMENT SUCCESSFUL!         ║"
 echo -e "╚══════════════════════════════════════════╝${NC}"
-echo -e "🌐 Access: ${BLUE}http://${DOMAIN}${NC}\n"
+echo -e "🌐 Access: ${BLUE}https://${DOMAIN}${NC}\n"

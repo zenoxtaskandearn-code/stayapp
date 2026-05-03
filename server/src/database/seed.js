@@ -39,6 +39,7 @@ const ensureTables = async () => {
         otp_expires DATETIME,
         reset_token VARCHAR(255),
         reset_expires DATETIME,
+        avatar VARCHAR(255) DEFAULT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
@@ -49,6 +50,7 @@ const ensureTables = async () => {
     await addColumnIfMissing('users', 'otp_expires', 'DATETIME AFTER verification_otp');
     await addColumnIfMissing('users', 'reset_token', 'VARCHAR(255) AFTER otp_expires');
     await addColumnIfMissing('users', 'reset_expires', 'DATETIME AFTER reset_token');
+    await addColumnIfMissing('users', 'avatar', 'VARCHAR(255) DEFAULT NULL AFTER reset_expires');
   }
 
   if (!(await tableExists('categories'))) {
@@ -81,7 +83,7 @@ const ensureTables = async () => {
         square_feet INT DEFAULT 0,
         property_type VARCHAR(50),
         furnished VARCHAR(50),
-        status VARCHAR(50) DEFAULT 'active',
+        status VARCHAR(50) DEFAULT 'available',
         featured BOOLEAN DEFAULT FALSE,
         category_id INT,
         currency VARCHAR(3) DEFAULT 'USD',
@@ -96,6 +98,7 @@ const ensureTables = async () => {
     await addColumnIfMissing('properties', 'category_id', 'INT AFTER featured');
     await addColumnIfMissing('properties', 'currency', "VARCHAR(3) DEFAULT 'USD' AFTER category_id");
     await addColumnIfMissing('properties', 'amenities', 'JSON AFTER currency');
+    await addColumnIfMissing('properties', 'created_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP AFTER amenities');
   }
 
   if (!(await tableExists('property_images'))) {
@@ -234,14 +237,13 @@ const seedData = async () => {
       ['Admin User', 'amitxrajwar@gmail.com', adminPassword]
     );
     console.log('✅ Admin: amitxrajwar@gmail.com / admin123');
-
-    await pool.query(
-      `INSERT INTO users (name, email, password, role, is_verified) VALUES (?, ?, ?, 'user', TRUE)`,
-      ['Test User', 'user@premiumstays.com', userPassword]
-    );
-    console.log('✅ Test User: user@premiumstays.com / user123');
   } else {
-    console.log('\n👤 Admin user already exists, skipping...');
+    console.log('\n👤 Admin user exists, resetting password...');
+    await pool.query(
+      `UPDATE users SET password = ?, is_verified = TRUE WHERE email = ?`,
+      [adminPassword, 'amitxrajwar@gmail.com']
+    );
+    console.log('✅ Admin password reset: amitxrajwar@gmail.com / admin123');
   }
 
   // Categories - only if empty
@@ -283,25 +285,25 @@ const seedData = async () => {
         square_feet: 1200,
         property_type: 'apartment',
         furnished: 'furnished',
-        status: 'active',
-        featured: true,
-        category_id: 1,
-        currency: 'USD',
-        amenities: JSON.stringify(['WiFi', 'Gym', 'Pool', 'Parking', 'Laundry']),
-      },
-      {
-        title: 'Cozy Beach House',
-        description: 'Beautiful beach house with ocean views and private garden.',
-        location: 'Miami, FL',
-        map_link: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3560!2d-80.1918!3d25.7617',
-        monthly_price: 2800,
-        deposit: 2800,
-        bedrooms: 3,
-        bathrooms: 2,
-        square_feet: 1800,
-        property_type: 'house',
-        furnished: 'semi-furnished',
-        status: 'active',
+      status: 'available',
+      featured: true,
+      category_id: 1,
+      currency: 'USD',
+      amenities: JSON.stringify(['WiFi', 'Gym', 'Pool', 'Parking', 'Laundry']),
+    },
+    {
+      title: 'Cozy Beach House',
+      description: 'Beautiful beach house with ocean views and private garden.',
+      location: 'Miami, FL',
+      map_link: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3560!2d-80.1918!3d25.7617',
+      monthly_price: 2800,
+      deposit: 2800,
+      bedrooms: 3,
+      bathrooms: 2,
+      square_feet: 1800,
+      property_type: 'house',
+      furnished: 'semi-furnished',
+      status: 'available',
         featured: true,
         category_id: 2,
         currency: 'USD',
@@ -319,8 +321,8 @@ const seedData = async () => {
         square_feet: 450,
         property_type: 'studio',
         furnished: 'furnished',
-        status: 'active',
-        featured: false,
+      status: 'available',
+      featured: false,
         category_id: 4,
         currency: 'GBP',
         amenities: JSON.stringify(['WiFi', 'Laundry', '24/7 Security']),
