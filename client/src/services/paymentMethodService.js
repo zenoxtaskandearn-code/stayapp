@@ -1,6 +1,6 @@
 import api from './api';
 
-const API = '/api/payment-methods';
+const API = '/payment-methods';
 
 export const paymentMethodService = {
   getAll: () => api.get(API),
