@@ -76,14 +76,23 @@ const Payment = () => {
 <h3 className="text-lg font-semibold mb-4">Select Payment Method</h3>
                
                {booking.payment_methods?.length > 0 && (
-                 <div className="flex flex-wrap gap-2">
+                 <div className="space-y-3">
                    {booking.payment_methods.map((method) => (
                      <button
                        key={method.id}
                        onClick={() => handleViewInstructions(method.id)}
-                       className="bg-primary/10 hover:bg-primary/20 text-primary px-3 py-2 rounded-lg text-sm font-medium"
+                       className="w-full bg-gray-50 hover:bg-gray-100 rounded-xl p-4 text-left flex items-center gap-3 transition-colors"
                      >
-                       {method.name}
+                       <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                         <FiCreditCard className="text-primary w-5 h-5" />
+                       </div>
+                       <div className="flex-1">
+                         <div className="font-medium text-gray-900">{method.name}</div>
+                         {method.description && (
+                           <div className="text-xs text-gray-500 line-clamp-1">{method.description.replace(/<[^>]*>/g, '')}</div>
+                         )}
+                       </div>
+                       <FiExternalLink className="text-primary" />
                      </button>
                    ))}
                  </div>
