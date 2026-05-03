@@ -29,12 +29,21 @@ log_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
 log_success() { echo -e "${GREEN}[✓]${NC} $1"; }
 log_error() { echo -e "${RED}[✗]${NC} $1"; exit 1; }
 
-echo -e "\n${BLUE}🚀 Starting Deployment for ${DOMAIN}...${NC}\n"
+echo -e "\n${BLUE}🚀 Starting Automated Deployment for ${DOMAIN}...${NC}\n"
+
+# 0. Ensure Script has correct line endings (Fixes Windows CRLF issues)
+if [[ -n $(head -1 "$0" | tr -d '\r' | grep -c 'bash$') ]]; then
+  log_info "Fixing line endings..."
+  sed -i 's/\r$//' "$0"
+fi
 
 # 1. Pull Code (Force overwrite local conflicts)
 log_info "Pulling latest code..."
 git stash --include-untracked 2>/dev/null
 git pull origin main
+if [ $? -ne 0 ]; then
+  log_error "Git pull failed!"
+fi
 
 # 2. Backend Setup
 log_info "Configuring Backend..."
@@ -63,7 +72,8 @@ log_success "Created server/.env"
 
 cd server
 log_info "Installing Backend dependencies..."
-npm install --production --quiet
+rm -rf node_modules package-lock.json
+npm install --omit=dev --quiet
 
 log_info "Checking Database..."
 mysql -u root -e "CREATE DATABASE IF NOT EXISTS rental_property;" 2>/dev/null
@@ -87,6 +97,9 @@ cd client
 sed -i "s|baseURL:.*|baseURL: '/api',|" src/services/api.js 2>/dev/null || true
 npm install --quiet
 npm run build
+if [ $? -ne 0 ]; then
+  log_error "Frontend build failed!"
+fi
 log_success "Frontend build complete"
 
 log_info "Deploying to Web Server..."
@@ -96,7 +109,12 @@ sudo cp -r dist/* /var/www/html/rental-app/
 cd ..
 
 # 4. Nginx Configuration
-log_info "Configuring Nginx..."
+log_info "Configuring Nginx for ${DOMAIN}..."
+
+# Ensure Nginx is running
+sudo systemctl start nginx 2>/dev/null
+sudo systemctl enable nginx 2>/dev/null
+
 sudo tee /etc/nginx/sites-available/rental-app > /dev/null << EOF
 server {
     listen 80;

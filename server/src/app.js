@@ -30,25 +30,33 @@ const syncDatabase = async () => {
   try {
     console.log('🔧 Checking database schema...');
     
-    // Users Table Updates
-    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(20) AFTER email`);
-    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token VARCHAR(255) AFTER is_verified`);
-    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_expires DATETIME AFTER reset_token`);
+    const addColumnIfMissing = async (table, column, definition) => {
+      const [rows] = await pool.query(
+        `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
+         WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?`,
+        [table, column]
+      );
+      if (rows.length === 0) {
+        await pool.query(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+        console.log(`   ✓ Added ${column} to ${table}`);
+      }
+    };
 
-    // Properties Table Updates
-    await pool.query(`ALTER TABLE properties ADD COLUMN IF NOT EXISTS map_link TEXT AFTER location`);
-    await pool.query(`ALTER TABLE properties ADD COLUMN IF NOT EXISTS deposit DECIMAL(10,2) DEFAULT 0 AFTER monthly_price`);
+    await addColumnIfMissing('users', 'phone', 'VARCHAR(20) AFTER email');
+    await addColumnIfMissing('users', 'reset_token', 'VARCHAR(255) AFTER is_verified');
+    await addColumnIfMissing('users', 'reset_expires', 'DATETIME AFTER reset_token');
 
-    // Bookings Table Updates
-    await pool.query(`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS currency VARCHAR(3) DEFAULT 'USD' AFTER total_amount`);
+    await addColumnIfMissing('properties', 'map_link', 'TEXT AFTER location');
+    await addColumnIfMissing('properties', 'deposit', 'DECIMAL(10,2) DEFAULT 0 AFTER monthly_price');
 
-    // Payments Table Updates
-    await pool.query(`ALTER TABLE payments ADD COLUMN IF NOT EXISTS screenshot VARCHAR(255) AFTER status`);
-    await pool.query(`ALTER TABLE payments ADD COLUMN IF NOT EXISTS admin_notes TEXT AFTER screenshot`);
+    await addColumnIfMissing('bookings', 'currency', "VARCHAR(3) DEFAULT 'USD' AFTER total_amount");
+
+    await addColumnIfMissing('payments', 'screenshot', 'VARCHAR(255) AFTER status');
+    await addColumnIfMissing('payments', 'admin_notes', 'TEXT AFTER screenshot');
 
     console.log('✅ Database schema is up to date!');
   } catch (error) {
-    console.log('⚠️  Schema sync note:', error.message);
+    console.error('⚠️  Schema sync error:', error.message);
   }
 };
 
