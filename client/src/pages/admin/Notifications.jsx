@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FiBell, FiCheck, FiCheckCircle, FiCalendar, FiTrash2 } from 'react-icons/fi';
-import { useNotificationStore } from '../../store/notificationStore';
+import { useNotificationStore } from '/src/store/notificationStore';
 import Loader from '../../components/Loader';
 import moment from 'moment';
 

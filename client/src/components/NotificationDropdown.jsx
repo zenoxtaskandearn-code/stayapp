@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { FiBell, FiCheck, FiX, FiCalendar } from 'react-icons/fi';
-import { useNotificationStore } from '../../store/notificationStore';
+import { useNotificationStore } from '/src/store/notificationStore';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 
