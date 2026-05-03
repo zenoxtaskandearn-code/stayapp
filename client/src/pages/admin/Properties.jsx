@@ -84,20 +84,32 @@ const AdminProperties = () => {
     if (property) {
       setEditProperty(property);
       
-      // Load selected payment method IDs
+      // Load selected payment method IDs - handle all possible formats
       let selectedPaymentIds = [];
       if (property.payment_methods && Array.isArray(property.payment_methods)) {
         selectedPaymentIds = property.payment_methods.map(pm => pm.id);
       } else if (property.payment_method_ids) {
         if (Array.isArray(property.payment_method_ids)) {
           selectedPaymentIds = property.payment_method_ids;
-        } else if (typeof property.payment_method_ids === 'string' && property.payment_method_ids.includes(',')) {
-          selectedPaymentIds = property.payment_method_ids.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
-        } else {
-          try {
-            selectedPaymentIds = JSON.parse(property.payment_method_ids);
-          } catch (e) {}
+        } else if (typeof property.payment_method_ids === 'string') {
+          if (property.payment_method_ids.includes(',')) {
+            selectedPaymentIds = property.payment_method_ids.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
+          } else if (property.payment_method_ids.match(/^\d+$/)) {
+            selectedPaymentIds = [parseInt(property.payment_method_ids)];
+          } else {
+            try {
+              const parsed = JSON.parse(property.payment_method_ids);
+              selectedPaymentIds = Array.isArray(parsed) ? parsed : [];
+            } catch (e) {
+              selectedPaymentIds = [];
+            }
+          }
         }
+      }
+      
+      // Ensure it's always an array
+      if (!Array.isArray(selectedPaymentIds)) {
+        selectedPaymentIds = [];
       }
       
       setFormData({
