@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { FaMapMarkerAlt, FaCalendarAlt, FaDollarSign, FaHome, FaClock, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaCalendarAlt, FaHome, FaClock, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import { bookingService } from '../services/bookingService';
 import { useAuthStore } from '../store/useStore';
 import Loader from '../components/Loader';
@@ -203,7 +203,7 @@ const tabs = [
                           to={`/payment/${booking.id}`}
                           className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors text-sm font-medium"
                         >
-                          <FaDollarSign /> Complete Payment
+                          Complete Payment
                         </Link>
                       )}
                     </div>
