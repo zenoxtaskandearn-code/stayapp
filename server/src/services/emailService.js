@@ -237,6 +237,16 @@ export const sendBookingConfirmation = async (email, booking, property, paymentM
               </table>
             </div>
 
+            <!-- Payment Proof Request -->
+            <div style="background: #fef3c7; border-radius: 12px; padding: 20px; margin-bottom: 25px; border: 1px solid #fcd34d; text-align: center;">
+              <p style="color: #92400e; margin: 0 0 8px 0; font-size: 15px; font-weight: 600;">
+                Please Reply with Payment Proof
+              </p>
+              <p style="color: #78350f; margin: 0; font-size: 13px; line-height: 1.5;">
+                After making the payment, please reply to this email with a screenshot or image of your payment confirmation as proof.
+              </p>
+            </div>
+            
             <div style="text-align: center; margin-top: 25px;">
               <a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/my-bookings" style="display: inline-block; background: ${theme.gradient}; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 14px;">
                 Manage My Booking
