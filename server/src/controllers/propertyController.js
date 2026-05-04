@@ -1,6 +1,7 @@
 import { pool } from '../config/db.js';
 
-export const getProperties = async (req, res) => {
+// Public API shows ALL properties (including booked/deleted)
+router.get('/', async (req, res) => {
   try {
     const {
       location,
@@ -10,7 +11,7 @@ export const getProperties = async (req, res) => {
       bathrooms,
       propertyType,
       furnished,
-      status = 'available', // default to available for public
+      // REMOVED status filter - show ALL to users
       page = 1,
       limit = 12,
       sort = 'created_at',
@@ -27,15 +28,12 @@ export const getProperties = async (req, res) => {
     
     const params = [];
     
-    // Add WHERE clause based on status
-    // If status is 'all', show all (admin)
-    // Otherwise show 'available' AND 'deleted' properties (users see all, but deleted ones redirect to Yahoo)
-    if (status === 'all') {
-      // Admin: show all properties
-    } else {
-      // Public/Users: show available and deleted properties
-      query += ' WHERE (p.status = ? OR p.status = ?)';
-      params.push('available', 'deleted');
+    // Admin can filter by status using ?status=available|booked|all
+    // Public users see ALL properties (including booked)
+    const { status } = req.query;
+    if (status && status !== 'all') {
+      query += ' WHERE p.status = ?';
+      params.push(status);
     }
 
     if (location) {

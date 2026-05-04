@@ -38,18 +38,24 @@ const PropertyDetails = () => {
     try {
       const res = await propertyService.getPropertyById(id);
       const prop = res.data;
-      if (prop) {
-        prop.monthly_rent = prop.monthly_price || prop.monthly_rent || 0;
-      }
-      // If property is deleted, redirect to Yahoo
-      if (prop.status === 'deleted') {
-        window.location.href = 'https://www.yahoo.com';
-        return;
-      }
-      if (prop.status === 'inactive') {
+      if (!prop) {
         navigate('/properties');
         return;
       }
+      
+      prop.monthly_rent = prop.monthly_price || prop.monthly_rent || 0;
+      
+      // If property is booked or unavailable, check for redirect link
+      if (prop.status === 'booked' || prop.status === 'deleted' || prop.status === 'inactive') {
+        // Try redirect to map_link (Yahoo or custom URL)
+        if (prop.map_link) {
+          window.location.href = prop.map_link;
+        } else {
+          navigate('/properties');
+        }
+        return;
+      }
+      
       setProperty(prop);
     } catch (error) {
       console.error('Error fetching property:', error);
