@@ -235,9 +235,9 @@ const seedData = async () => {
     try {
       await pool.query(
         `INSERT INTO users (name, email, password, role, is_verified) VALUES (?, ?, ?, 'admin', TRUE)`,
-        ['Admin User', 'admin@premiumstays.com', adminPassword]
+        ['Admin User', 'mijcocar191919@gmail.com', adminPassword]
       );
-      console.log('✅ Admin: admin@premiumstays.com / admin123');
+      console.log('✅ Admin: mijcocar191919@gmail.com / admin123');
     } catch (error) {
       console.log('⚠️ Admin user might already exist:', error.message);
     }

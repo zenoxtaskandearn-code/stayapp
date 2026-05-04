@@ -61,9 +61,16 @@ const Booking = () => {
       if (prop) {
         prop.monthly_rent = prop.monthly_price || prop.monthly_rent || 0;
       }
+      // If property is deleted, redirect to Yahoo
+      if (prop.status === 'deleted') {
+        window.location.href = 'https://www.yahoo.com';
+        return;
+      }
       setProperty(prop);
     } catch (error) {
       console.error('Error fetching property:', error);
+      // Redirect to properties page if property not found or deleted
+      navigate('/properties');
     } finally {
       setLoading(false);
     }

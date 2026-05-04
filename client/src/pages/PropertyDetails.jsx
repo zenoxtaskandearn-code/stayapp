@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, useSearchParams } from 'react-router-dom';
+import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaBed, FaBath, FaRulerCombined, FaMapMarkerAlt } from 'react-icons/fa';
 import { FiCreditCard } from 'react-icons/fi';
@@ -9,6 +9,7 @@ import { useAuthStore, useCurrencyStore } from '../store/useStore';
 const PropertyDetails = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
   const { symbol } = useCurrencyStore();
   const [property, setProperty] = useState(null);
@@ -40,13 +41,20 @@ const PropertyDetails = () => {
       if (prop) {
         prop.monthly_rent = prop.monthly_price || prop.monthly_rent || 0;
       }
-      if (prop.status === 'inactive') {
+      // If property is deleted, redirect to Yahoo
+      if (prop.status === 'deleted') {
         window.location.href = 'https://www.yahoo.com';
+        return;
+      }
+      if (prop.status === 'inactive') {
+        navigate('/properties');
         return;
       }
       setProperty(prop);
     } catch (error) {
       console.error('Error fetching property:', error);
+      // Redirect to properties page if property not found or deleted
+      navigate('/properties');
     } finally {
       setLoading(false);
     }

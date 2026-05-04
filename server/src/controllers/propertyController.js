@@ -28,11 +28,14 @@ export const getProperties = async (req, res) => {
     const params = [];
     
     // Add WHERE clause based on status
-    // If status is 'all' or not provided, show all (admin)
-    // Otherwise filter by status (public)
-    if (status && status !== 'all') {
-      query += ' WHERE p.status = ?';
-      params.push(status);
+    // If status is 'all', show all (admin)
+    // Otherwise show 'available' AND 'deleted' properties (users see all, but deleted ones redirect to Yahoo)
+    if (status === 'all') {
+      // Admin: show all properties
+    } else {
+      // Public/Users: show available and deleted properties
+      query += ' WHERE (p.status = ? OR p.status = ?)';
+      params.push('available', 'deleted');
     }
 
     if (location) {
@@ -303,24 +306,16 @@ export const deleteProperty = async (req, res) => {
   try {
     const { id } = req.params;
     
-    // Get property details first to check for redirect URL
+    // Get property details first
     const [property] = await pool.query('SELECT * FROM properties WHERE id = ?', [id]);
     
     if (property.length > 0) {
-      // Get settings for redirect URL
-      const [settings] = await pool.query('SELECT * FROM settings LIMIT 1');
-      const redirectUrl = property[0].map_link || settings[0]?.contact_url;
+      // Mark property as deleted instead of actually deleting it
+      // This allows users to still see the property in listings but redirects to Yahoo
+      await pool.query('UPDATE properties SET status = ? WHERE id = ?', ['deleted', id]);
       
-      // Delete the property
-      await pool.query('DELETE FROM property_images WHERE property_id = ?', [id]);
-      await pool.query('DELETE FROM property_payment_methods WHERE property_id = ?', [id]);
-      await pool.query('DELETE FROM bookings WHERE property_id = ?', [id]);
-      await pool.query('DELETE FROM properties WHERE id = ?', [id]);
-      
-      // If there's a redirect URL, return it so frontend can redirect
       res.json({ 
-        message: 'Property deleted successfully',
-        redirectUrl: redirectUrl || null
+        message: 'Property deleted successfully'
       });
     } else {
       res.status(404).json({ message: 'Property not found' });

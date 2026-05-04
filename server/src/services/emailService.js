@@ -185,7 +185,7 @@ export const sendBookingConfirmation = async (email, booking, property, paymentM
   const mailOptions = {
     from: process.env.EMAIL_FROM || `${siteName} <noreply@stayfinder.com>`,
     to: email,
-    subject: `Booking Confirmed - #${booking.id} - ${siteName}`,
+    subject: `Booking Confirmed - #${booking.id} - ${property?.title || 'Booking'}`,
     html: `
       <!DOCTYPE html>
       <html>
@@ -289,7 +289,7 @@ export const sendBookingApproved = async (email, userName, booking, property, se
   const mailOptions = {
     from: process.env.EMAIL_FROM || `${siteName} <noreply@stayfinder.com>`,
     to: email,
-    subject: `Booking Approved - #${booking.id} - ${siteName}`,
+    subject: `Booking Approved - #${booking.id} - ${property?.title || 'Booking'}`,
     html: `
       <!DOCTYPE html>
       <html>
@@ -307,10 +307,29 @@ export const sendBookingApproved = async (email, userName, booking, property, se
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
               </div>
-              <h2 style="color: ${theme.dark}; margin: 0 0 10px 0; font-size: 24px; font-weight: 600;">Booking Approved!</h2>
-              <p style="color: ${theme.gray}; margin: 0; font-size: 15px;">Your booking request has been approved.</p>
+              <h2 style="color: ${theme.dark}; margin: 0 0 10px 0; font-size: 24px; font-weight: 600;">Congratulations!</h2>
+              <p style="color: ${theme.gray}; margin: 0; font-size: 15px;">Your booking has been successfully confirmed.</p>
             </div>
             
+            <div style="margin-bottom: 25px;">
+              <p style="color: ${theme.dark}; margin: 0 0 15px 0; font-size: 15px; line-height: 1.6;">
+                Dear ${userName},
+              </p>
+              <p style="color: ${theme.gray}; margin: 0 0 15px 0; font-size: 14px; line-height: 1.8;">
+                Congratulations! Your booking has been successfully confirmed.
+              </p>
+              <p style="color: ${theme.gray}; margin: 0 0 15px 0; font-size: 14px; line-height: 1.8;">
+                We are pleased to have you with us. Once your payment has been processed—which typically takes 12 to 24 hours—one of our local agents will contact you directly to arrange the key handover and welcome meeting.
+              </p>
+              <p style="color: ${theme.gray}; margin: 0 0 15px 0; font-size: 14px; line-height: 1.8;">
+                In the meantime, if you have any questions or need assistance, please don't hesitate to reach out. We're here to help.
+              </p>
+              <p style="color: ${theme.gray}; margin: 0 0 15px 0; font-size: 14px; line-height: 1.8;">
+                Thank you for choosing ${siteName}. We hope you have a wonderful and comfortable stay.
+              </p>
+            </div>
+
+            <!-- Booking Details -->
             <div style="background: ${theme.light}; border-radius: 12px; padding: 25px; margin-bottom: 25px;">
               <h3 style="color: ${theme.dark}; margin: 0 0 15px 0; font-size: 16px; font-weight: 600;">Booking Details</h3>
               <table style="width: 100%; border-collapse: collapse;">
@@ -340,12 +359,9 @@ export const sendBookingApproved = async (email, userName, booking, property, se
                 </tr>
               </table>
             </div>
-            
-            <p style="color: ${theme.gray}; margin: 0; font-size: 14px; text-align: center;">
-              Thank you for choosing ${siteName}! We hope you enjoy your new home.
-            </p>
-            
+
             <div style="text-align: center; margin-top: 25px;">
+              <p style="color: ${theme.gray}; margin: 0 0 15px 0; font-size: 14px; font-weight: 600;">Best regards,<br/>The ${siteName} Team</p>
               <a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/my-bookings" style="display: inline-block; background: ${theme.gradient}; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 14px;">
                 View Booking Details
               </a>
@@ -374,7 +390,7 @@ export const sendBookingRejected = async (email, userName, booking, property, se
   const mailOptions = {
     from: process.env.EMAIL_FROM || `${siteName} <noreply@stayfinder.com>`,
     to: email,
-    subject: `Booking Update - #${booking.id} - ${siteName}`,
+    subject: `Booking Update - #${booking.id} - ${property?.title || 'Booking'}`,
     html: `
       <!DOCTYPE html>
       <html>
@@ -449,7 +465,7 @@ export const sendAdminBookingNotification = async (booking, user, property, admi
   const mailOptions = {
     from: process.env.EMAIL_FROM || `${siteName} <noreply@stayfinder.com>`,
     to: adminEmail,
-    subject: `🔔 New Booking Alert - #${booking.id} - ${siteName}`,
+    subject: `🔔 New Booking Alert - #${booking.id} - ${property?.title || 'Booking'}`,
     html: `
       <!DOCTYPE html>
       <html>
