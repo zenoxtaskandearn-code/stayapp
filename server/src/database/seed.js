@@ -259,6 +259,10 @@ const seedData = async () => {
   } catch (error) {
     console.log('⚠️ Settings error:', error.message);
   }
+
+  // Categories - only if empty
+  const [catCheck] = await pool.query('SELECT id FROM categories LIMIT 1');
+  if (catCheck.length === 0) {
     console.log('\n📂 Creating categories...');
     const categories = [
       ['Apartments', 'apartments', 'Apartment rentals', 'building', true],
@@ -390,20 +394,6 @@ const seedData = async () => {
     console.log('✅ Payment methods assigned to properties');
   } else {
     console.log('\n📝 Payment method assignments already exist, skipping...');
-  }
-
-  // Settings - only if empty
-  const [settingsCheck] = await pool.query('SELECT id FROM settings LIMIT 1');
-  if (settingsCheck.length === 0) {
-    console.log('\n⚙️ Creating default settings...');
-    await pool.query(
-      `INSERT INTO settings (website_name, theme_color, footer_text, contact_email, contact_phone, currency)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      ['Blueground', '#1e40af', '© 2026 Blueground. All rights reserved.', 'info@estate-theblueground.co.uk', '+1-555-0123', 'USD']
-    );
-    console.log('✅ Settings created');
-  } else {
-    console.log('\n⚙️ Settings already exist, skipping...');
   }
 };
 
