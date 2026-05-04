@@ -45,8 +45,8 @@ const PropertyDetails = () => {
       
       prop.monthly_rent = prop.monthly_price || prop.monthly_rent || 0;
       
-      // Only redirect if property is DELETED - use map_link or Yahoo
-      if (prop.status === 'deleted') {
+      // Redirect for deleted or inactive - use map_link or Yahoo
+      if (prop.status === 'deleted' || prop.status === 'inactive') {
         window.location.href = prop.map_link || 'https://www.yahoo.com';
         return;
       }

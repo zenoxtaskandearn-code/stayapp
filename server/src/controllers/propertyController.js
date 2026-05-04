@@ -28,12 +28,18 @@ export const getProperties = async (req, res) => {
     const params = [];
     
     // If status='all' = show all (admin)
-    // If status given = filter by that status
-    // Otherwise = show all to public users
+    // If status given = filter by that status  
+    // Otherwise = show only active/available for public (exclude inactive and deleted)
     const { status } = req.query;
-    if (status && status !== 'all') {
+    if (status === 'all') {
+      // Show all (admin)
+    } else if (status) {
       query += ' WHERE p.status = ?';
       params.push(status);
+    } else {
+      // Default for public - only show active/available
+      query += ' WHERE p.status = ?';
+      params.push('available');
     }
 
     if (location) {
@@ -79,8 +85,8 @@ export const getProperties = async (req, res) => {
 
     const countQuery = status && status !== 'all'
       ? 'SELECT COUNT(*) as total FROM properties WHERE status = ?'
-      : 'SELECT COUNT(*) as total FROM properties';
-    const countParams = status && status !== 'all' ? [status] : [];
+      : 'SELECT COUNT(*) as total FROM properties WHERE status = ?';
+    const countParams = status && status !== 'all' ? [status] : ['available'];
     const [countResult] = await pool.query(countQuery, countParams);
 
     const formattedProperties = properties.map((p) => {
