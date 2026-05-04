@@ -1,7 +1,6 @@
 import { pool } from '../config/db.js';
 
-// Public API shows ALL properties (including booked/deleted)
-router.get('/', async (req, res) => {
+export const getProperties = async (req, res) => {
   try {
     const {
       location,
