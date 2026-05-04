@@ -39,11 +39,10 @@ const formatPrice = (amount, currency = 'USD') => {
 // Email header with logo
 const emailHeader = (settings = {}) => {
   const siteName = settings.website_name || 'The Blueground';
-  const logoUrl = `${'http://localhost:5173'}/icon.svg`;
   return `
   <div style="background: ${theme.gradient}; padding: 30px; text-align: center;">
-    <img src="${logoUrl}" alt="${siteName}" style="height: 40px; margin-bottom: 10px;" />
-    <p style="color: rgba(255,255,255,0.9); margin: 5px 0 0 0; font-size: 14px;">Find your perfect home</p>
+    <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 700;">${siteName}</h1>
+    <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 14px;">Find your perfect home</p>
   </div>
   `;
 };
