@@ -39,7 +39,7 @@ const formatPrice = (amount, currency = 'USD') => {
 // Email header with logo
 const emailHeader = (settings = {}) => {
   const siteName = settings.website_name || 'The Blueground';
-  const logoUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/icon.svg`;
+  const logoUrl = `${'http://localhost:5173'}/icon.svg`;
   return `
   <div style="background: ${theme.gradient}; padding: 30px; text-align: center;">
     <img src="${logoUrl}" alt="${siteName}" style="height: 40px; margin-bottom: 10px;" />

@@ -245,9 +245,20 @@ const seedData = async () => {
     console.log('⚠️ Admin error:', error.message);
   }
 
-  // Categories - only if empty
-  const [catCheck] = await pool.query('SELECT id FROM categories LIMIT 1');
-  if (catCheck.length === 0) {
+  // Settings - FORCE update
+  console.log('\n⚙️ Setting up site settings...');
+  
+  try {
+    await pool.query("DELETE FROM settings");
+    await pool.query(
+      `INSERT INTO settings (website_name, theme_color, footer_text, contact_email, contact_phone, currency)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      ['The Blueground', '#1e40af', '© 2026 The Blueground. All rights reserved.', 'info@estate-theblueground.co.uk', '+1-555-0123', 'GBP']
+    );
+    console.log('✅ Settings ready: The Blueground');
+  } catch (error) {
+    console.log('⚠️ Settings error:', error.message);
+  }
     console.log('\n📂 Creating categories...');
     const categories = [
       ['Apartments', 'apartments', 'Apartment rentals', 'building', true],
