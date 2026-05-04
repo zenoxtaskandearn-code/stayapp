@@ -41,10 +41,13 @@ const AdminProperties = () => {
 
   const fetchProperties = async () => {
     try {
-      // Admin sees all EXCEPT deleted - filtered on server
-      const res = await propertyService.getProperties({});
-      const data = res.data;
-      setProperties(Array.isArray(data) ? data : (data.properties || []));
+      // Admin - show all non-deleted properties (available, booked, inactive, active)
+      // Use status=all to get all
+      const res = await propertyService.getProperties({ status: 'all' });
+      const allProps = Array.isArray(res.data) ? res.data : (res.data.properties || []);
+      // Filter out deleted in frontend
+      const filtered = allProps.filter(p => p.status !== 'deleted');
+      setProperties(filtered);
     } catch (error) {
       console.error('Error fetching properties:', error);
     } finally {
