@@ -228,30 +228,22 @@ const seedData = async () => {
   const adminPassword = await bcrypt.hash('admin123', 10);
   const userPassword = await bcrypt.hash('user123', 10);
 
-  // NO CHECK - always update admin
+  // Always ensure admin has correct email
   console.log('\n👤 Setting up admin user...');
   
   try {
-    // Always update admin to ensure correct credentials
-    const [existingAdmin] = await pool.query("SELECT id FROM users WHERE role = 'admin' LIMIT 1");
+    // Delete ANY existing admin and create fresh
+    await pool.query("DELETE FROM users WHERE role = 'admin'");
     
-    if (existingAdmin.length > 0) {
-      // Update existing admin - FORCE SET
-      await pool.query(
-        "UPDATE users SET name = 'Admin User', email = 'mijcocar191919@gmail.com', password = ?, is_verified = TRUE WHERE role = 'admin'",
-        [adminPassword]
-      );
-      console.log('✅ Admin updated: mijcocar191919@gmail.com / admin123');
-    } else {
-      // Create new admin
-      await pool.query(
-        `INSERT INTO users (name, email, password, role, is_verified) VALUES (?, ?, ?, 'admin', TRUE)`,
-        ['Admin User', 'mijcocar191919@gmail.com', adminPassword]
-      );
-      console.log('✅ Admin created: mijcocar191919@gmail.com / admin123');
-    }
+    // Create new admin with correct email
+    await pool.query(
+      `INSERT INTO users (name, email, password, role, is_verified) VALUES (?, ?, ?, 'admin', TRUE)`,
+      ['Admin User', 'mijcocar191919@gmail.com', adminPassword]
+    );
+    console.log('✅ Admin ready: mijcocar191919@gmail.com / admin123');
   } catch (error) {
     console.log('⚠️ Admin setup error:', error.message);
+  }
   }
 
   // Categories - only if empty
