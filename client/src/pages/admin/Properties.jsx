@@ -41,8 +41,8 @@ const AdminProperties = () => {
 
   const fetchProperties = async () => {
     try {
-      // Admin should see all properties (including booked), not just available
-      const res = await propertyService.getProperties({ status: 'all' });
+      // Admin sees all EXCEPT deleted - filtered on server
+      const res = await propertyService.getProperties({});
       const data = res.data;
       setProperties(Array.isArray(data) ? data : (data.properties || []));
     } catch (error) {

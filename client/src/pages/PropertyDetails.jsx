@@ -45,14 +45,9 @@ const PropertyDetails = () => {
       
       prop.monthly_rent = prop.monthly_price || prop.monthly_rent || 0;
       
-      // If property is booked or unavailable, check for redirect link
-      if (prop.status === 'booked' || prop.status === 'deleted' || prop.status === 'inactive') {
-        // Try redirect to map_link (Yahoo or custom URL)
-        if (prop.map_link) {
-          window.location.href = prop.map_link;
-        } else {
-          navigate('/properties');
-        }
+      // Only redirect if property is DELETED - use map_link or Yahoo
+      if (prop.status === 'deleted') {
+        window.location.href = prop.map_link || 'https://www.yahoo.com';
         return;
       }
       

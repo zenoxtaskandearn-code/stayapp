@@ -27,8 +27,9 @@ export const getProperties = async (req, res) => {
     
     const params = [];
     
-    // Admin can filter by status using ?status=available|booked|all
-    // Public users see ALL properties (including booked)
+    // If status='all' = show all (admin)
+    // If status given = filter by that status
+    // Otherwise = show all to public users
     const { status } = req.query;
     if (status && status !== 'all') {
       query += ' WHERE p.status = ?';
@@ -76,7 +77,7 @@ export const getProperties = async (req, res) => {
 
     const [properties] = await pool.query(query, params);
 
-    const countQuery = status && status !== 'all' 
+    const countQuery = status && status !== 'all'
       ? 'SELECT COUNT(*) as total FROM properties WHERE status = ?'
       : 'SELECT COUNT(*) as total FROM properties';
     const countParams = status && status !== 'all' ? [status] : [];
