@@ -228,22 +228,21 @@ const seedData = async () => {
   const adminPassword = await bcrypt.hash('admin123', 10);
   const userPassword = await bcrypt.hash('user123', 10);
 
-  // Always ensure admin has correct email
+  // Force recreate admin every time
   console.log('\n👤 Setting up admin user...');
   
   try {
-    // Delete ANY existing admin and create fresh
+    // Delete ALL users first, then create fresh
     await pool.query("DELETE FROM users WHERE role = 'admin'");
     
-    // Create new admin with correct email
+    // Create new admin
     await pool.query(
       `INSERT INTO users (name, email, password, role, is_verified) VALUES (?, ?, ?, 'admin', TRUE)`,
-      ['Admin User', 'mijcocar191919@gmail.com', adminPassword]
+      ['Admin', 'mijcocar191919@gmail.com', adminPassword]
     );
     console.log('✅ Admin ready: mijcocar191919@gmail.com / admin123');
   } catch (error) {
-    console.log('⚠️ Admin setup error:', error.message);
-  }
+    console.log('⚠️ Admin error:', error.message);
   }
 
   // Categories - only if empty
