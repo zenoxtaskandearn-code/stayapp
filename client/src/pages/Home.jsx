@@ -84,7 +84,7 @@ const Home = () => {
                 </div>
                 <h1 className="text-4xl md:text-5xl lg:text-5xl font-bold text-gray-900 leading-[1.15] mb-5">
                   Feel at home,<br />
-                  <span className="text-primary">free to roam.</span>
+                  <span className="text-gray-900">free to roam.</span>
                 </h1>
                 <p className="text-gray-500 text-sm md:text-base leading-relaxed mb-7 max-w-md">
                   Experience the home that moves with you for a month, a year, or longer with a global network of designer, furnished apartments.
