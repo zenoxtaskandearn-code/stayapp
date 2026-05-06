@@ -134,7 +134,6 @@ location /api {
         proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header Authorization "$http_authorization";
         proxy_set_header Access-Control-Allow-Headers "Authorization, Content-Type";
         proxy_set_header Access-Control-Allow-Origin "*";
         proxy_cache_bypass $http_upgrade;
