@@ -51,6 +51,26 @@ router.put('/mark-all-read', authenticate, authorize('admin'), async (req, res) 
   }
 });
 
+// Delete a notification (admin only)
+router.delete('/:id', authenticate, authorize('admin'), async (req, res) => {
+  try {
+    await pool.query('DELETE FROM notifications WHERE id = ?', [req.params.id]);
+    res.json({ message: 'Notification deleted' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Clear all notifications (admin only)
+router.delete('/', authenticate, authorize('admin'), async (req, res) => {
+  try {
+    await pool.query('DELETE FROM notifications');
+    res.json({ message: 'All notifications cleared' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Create notification (internal use)
 export const createNotification = async (type, title, message, data = {}) => {
   try {

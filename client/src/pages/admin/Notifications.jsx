@@ -11,7 +11,9 @@ const AdminNotifications = () => {
     loading,
     fetchNotifications,
     markAsRead,
-    markAllAsRead
+    markAllAsRead,
+    deleteNotification,
+    clearAllNotifications
   } = useNotificationStore();
 
   const [filter, setFilter] = useState('all'); // all, unread, read
@@ -66,15 +68,26 @@ const AdminNotifications = () => {
               <h1 className="heading-section mb-2">Notifications</h1>
               <p className="text-gray-500">Stay updated with all system activities</p>
             </div>
-            {notifications.some(n => !n.is_read) && (
-              <button
-                onClick={markAllAsRead}
-                className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
-              >
-                <FiCheck size={16} />
-                Mark All as Read
-              </button>
-            )}
+            <div className="flex items-center gap-2">
+              {notifications.some(n => !n.is_read) && (
+                <button
+                  onClick={markAllAsRead}
+                  className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
+                >
+                  <FiCheck size={16} />
+                  Mark All as Read
+                </button>
+              )}
+              {notifications.length > 0 && (
+                <button
+                  onClick={clearAllNotifications}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                >
+                  <FiTrash2 size={16} />
+                  Clear All
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Filter Tabs */}
@@ -154,15 +167,24 @@ const AdminNotifications = () => {
                           <span className="text-sm text-gray-500">
                             {formatTime(notification.created_at)}
                           </span>
-                          {!notification.is_read && (
+                          <div className="flex items-center gap-2">
+                            {!notification.is_read && (
+                              <button
+                                onClick={() => markAsRead(notification.id)}
+                                className="flex items-center gap-1 px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+                              >
+                                <FiCheck size={14} />
+                                Mark as Read
+                              </button>
+                            )}
                             <button
-                              onClick={() => markAsRead(notification.id)}
-                              className="flex items-center gap-1 px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+                              onClick={() => deleteNotification(notification.id)}
+                              className="flex items-center gap-1 px-3 py-1 text-sm bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
                             >
-                              <FiCheck size={14} />
-                              Mark as Read
+                              <FiTrash2 size={14} />
+                              Delete
                             </button>
-                          )}
+                          </div>
                         </div>
                       </div>
                     </div>

@@ -7,4 +7,6 @@ export const notificationService = {
   getUnreadCount: () => api.get(`${API}/unread-count`),
   markAsRead: (id) => api.put(`${API}/${id}/read`),
   markAllAsRead: () => api.put(`${API}/mark-all-read`),
+  delete: (id) => api.delete(`${API}/${id}`),
+  clearAll: () => api.delete(API),
 };

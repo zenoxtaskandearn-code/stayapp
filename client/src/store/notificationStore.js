@@ -52,5 +52,25 @@ export const useNotificationStore = create((set, get) => ({
     } catch (error) {
       console.error('Error marking all notifications as read:', error)
     }
+  },
+
+  deleteNotification: async (id) => {
+    try {
+      await notificationService.delete(id)
+      const notifications = get().notifications.filter(n => n.id !== id)
+      const unreadCount = notifications.filter(n => !n.is_read).length
+      set({ notifications, unreadCount })
+    } catch (error) {
+      console.error('Error deleting notification:', error)
+    }
+  },
+
+  clearAllNotifications: async () => {
+    try {
+      await notificationService.clearAll()
+      set({ notifications: [], unreadCount: 0 })
+    } catch (error) {
+      console.error('Error clearing notifications:', error)
+    }
   }
 }))
