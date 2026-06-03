@@ -290,3 +290,39 @@ export const resetPassword = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const changeEmail = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const userId = req.user.id;
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ message: 'Please enter a valid email address' });
+    }
+
+    if (!password) {
+      return res.status(400).json({ message: 'Password is required to change email' });
+    }
+
+    const [users] = await pool.query('SELECT password FROM users WHERE id = ?', [userId]);
+    if (users.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const isMatch = await bcrypt.compare(password, users[0].password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Current password is incorrect' });
+    }
+
+    const [existing] = await pool.query('SELECT id FROM users WHERE email = ?', [email]);
+    if (existing.length > 0) {
+      return res.status(400).json({ message: 'Email already in use by another account' });
+    }
+
+    await pool.query('UPDATE users SET email = ? WHERE id = ?', [email, userId]);
+
+    res.json({ message: 'Email updated successfully', email });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
