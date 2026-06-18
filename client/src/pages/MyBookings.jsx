@@ -8,9 +8,12 @@ import Loader from '../components/Loader';
 
 const getCurrencySymbol = (curr) => {
   const symbols = { USD: '$', GBP: '£', EUR: '€', NZD: 'NZ$' };
+  return symbols[curr] || 'NZ$';
+};
 
-  const formatPrice = (amount, currency = 'USD') => `${getCurrencySymbol(currency)}${(parseFloat(amount) || 0).toLocaleString()}`;
+const formatPrice = (amount, currency = 'USD') => `${getCurrencySymbol(currency)}${(parseFloat(amount) || 0).toLocaleString()}`;
 
+const MyBookings = () => {
   useEffect(() => {
     if (!isAuthenticated) {
       window.location.href = '/login';
