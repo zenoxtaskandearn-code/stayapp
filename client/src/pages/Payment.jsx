@@ -18,6 +18,8 @@ const Payment = () => {
 
   const getCurrencySymbol = (curr) => {
     const symbols = { USD: '$', GBP: '£', EUR: '€', NZD: 'NZ$' };
+    return symbols[curr] || 'NZ$';
+  };
 
   const formatPrice = (amount, curr = 'USD') => `${getCurrencySymbol(curr)}${(parseFloat(amount) || 0).toLocaleString()}`;
 

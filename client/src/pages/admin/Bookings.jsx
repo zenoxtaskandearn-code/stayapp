@@ -31,6 +31,8 @@ const AdminBookings = () => {
 
   const getCurrencySymbol = (currency) => {
     const symbols = { USD: '$', GBP: '£', EUR: '€', NZD: 'NZ$' };
+    return symbols[currency] || 'NZ$';
+  };
 
   const formatPrice = (amount, currency = 'USD') => `${getCurrencySymbol(currency)}${(parseFloat(amount) || 0).toLocaleString()}`;
 
