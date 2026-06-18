@@ -28,7 +28,7 @@ const theme = {
 };
 
 const getCurrencySymbol = (currency) => {
-  const symbols = { USD: '$', GBP: '£', EUR: '€' };
+  const symbols = { USD: '$', GBP: '£', EUR: '€', NZD: 'NZ$' };
   return symbols[currency] || '$';
 };
 

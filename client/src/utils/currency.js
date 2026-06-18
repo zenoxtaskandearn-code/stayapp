@@ -15,4 +15,5 @@ export const currencies = [
   { code: 'GBP', symbol: '£', name: 'British Pound' },
   { code: 'USD', symbol: '$', name: 'US Dollar' },
   { code: 'EUR', symbol: '€', name: 'Euro' },
+  { code: 'NZD', symbol: 'NZ$', name: 'New Zealand Dollar' },
 ];

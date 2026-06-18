@@ -7,15 +7,7 @@ import { useAuthStore } from '../store/useStore';
 import Loader from '../components/Loader';
 
 const getCurrencySymbol = (curr) => {
-  const symbols = { USD: '$', GBP: '£', EUR: '€' };
-  return symbols[curr] || '$';
-};
-
-const MyBookings = () => {
-  const { isAuthenticated, user } = useAuthStore();
-  const [bookings, setBookings] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('all');
+  const symbols = { USD: '$', GBP: '£', EUR: '€', NZD: 'NZ$' };
 
   const formatPrice = (amount, currency = 'USD') => `${getCurrencySymbol(currency)}${(parseFloat(amount) || 0).toLocaleString()}`;
 

@@ -17,9 +17,7 @@ const Payment = () => {
   const [methodDetails, setMethodDetails] = useState(null);
 
   const getCurrencySymbol = (curr) => {
-    const symbols = { USD: '$', GBP: '£', EUR: '€' };
-    return symbols[curr] || '$';
-  };
+    const symbols = { USD: '$', GBP: '£', EUR: '€', NZD: 'NZ$' };
 
   const formatPrice = (amount, curr = 'USD') => `${getCurrencySymbol(curr)}${(parseFloat(amount) || 0).toLocaleString()}`;
 

@@ -1,12 +1,12 @@
 import { create } from 'zustand';
 
 export const useSettingsStore = create((set, get) => ({
-  currency: 'USD',
+  currency: 'GBP',
   symbol: '$',
   loading: true,
   
   setCurrency: (currency) => {
-    const symbols = { USD: '$', EUR: '€', GBP: '£' };
+    const symbols = { USD: '$', EUR: '€', GBP: '£', NZD: 'NZ$' };
     set({ 
       currency, 
       symbol: symbols[currency] || '$' 

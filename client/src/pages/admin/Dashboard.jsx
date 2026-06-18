@@ -28,9 +28,7 @@ const recentActivities = [
 ];
 
 const getCurrencySymbol = (currency) => {
-  const symbols = { USD: '$', GBP: '£', EUR: '€' };
-  return symbols[currency] || '$';
-};
+  const symbols = { USD: '$', GBP: '£', EUR: '€', NZD: 'NZ$' };
 
 const formatPrice = (amount, currency = 'USD') => `${getCurrencySymbol(currency)}${(parseFloat(amount) || 0).toLocaleString()}`;
 

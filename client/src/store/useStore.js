@@ -80,7 +80,7 @@ export const useCurrencyStore = create(
       symbol: '£',
 
       setCurrency: (curr) => {
-        const symbols = { GBP: '£', USD: '$', EUR: '€' };
+        const symbols = { GBP: '£', USD: '$', EUR: '€', NZD: 'NZ$' };
         set({ currency: curr, symbol: symbols[curr] || '£' });
       },
     }),

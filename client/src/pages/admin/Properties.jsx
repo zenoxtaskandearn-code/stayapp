@@ -13,6 +13,7 @@ const currencyOptions = [
   { code: 'GBP', symbol: '£' },
   { code: 'EUR', symbol: '€' },
   { code: 'USD', symbol: '$' },
+  { code: 'NZD', symbol: 'NZ$' },
 ];
 
 const AdminProperties = () => {
