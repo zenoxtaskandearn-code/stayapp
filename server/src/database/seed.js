@@ -228,34 +228,40 @@ const seedData = async () => {
   const adminPassword = await bcrypt.hash('admin123', 10);
   const userPassword = await bcrypt.hash('user123', 10);
 
-  // Force recreate admin every time
+  // Admin - only create if no admin exists
   console.log('\n👤 Setting up admin user...');
   
   try {
-    // Delete ALL users first, then create fresh
-    await pool.query("DELETE FROM users WHERE role = 'admin'");
-    
-    // Create new admin
-    await pool.query(
-      `INSERT INTO users (name, email, password, role, is_verified) VALUES (?, ?, ?, 'admin', TRUE)`,
-      ['Admin', 'mijcocar191919@gmail.com', adminPassword]
-    );
-    console.log('✅ Admin ready: mijcocar191919@gmail.com / admin123');
+    const [adminCheck] = await pool.query("SELECT id FROM users WHERE role = 'admin' LIMIT 1");
+    if (adminCheck.length === 0) {
+      // Create new admin
+      await pool.query(
+        `INSERT INTO users (name, email, password, role, is_verified) VALUES (?, ?, ?, 'admin', TRUE)`,
+        ['Admin', 'mijcocar191919@gmail.com', adminPassword]
+      );
+      console.log('✅ Admin ready: mijcocar191919@gmail.com / admin123');
+    } else {
+      console.log('✅ Admin already exists, skipping...');
+    }
   } catch (error) {
     console.log('⚠️ Admin error:', error.message);
   }
 
-  // Settings - FORCE update
+  // Settings - only insert if no settings row exists
   console.log('\n⚙️ Setting up site settings...');
   
   try {
-    await pool.query("DELETE FROM settings");
-    await pool.query(
-      `INSERT INTO settings (website_name, theme_color, footer_text, contact_email, contact_phone, currency)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      ['The Blueground', '#1e40af', '© 2026 The Blueground. All rights reserved.', 'info@estate-theblueground.co.uk', '+1-555-0123', 'GBP']
-    );
-    console.log('✅ Settings ready: The Blueground');
+    const [settingsCheck] = await pool.query('SELECT id FROM settings LIMIT 1');
+    if (settingsCheck.length === 0) {
+      await pool.query(
+        `INSERT INTO settings (website_name, theme_color, footer_text, contact_email, contact_phone, currency)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        ['The Blueground', '#1e40af', '© 2026 The Blueground. All rights reserved.', 'info@estate-theblueground.co.uk', '+1-555-0123', 'GBP']
+      );
+      console.log('✅ Settings ready: The Blueground');
+    } else {
+      console.log('✅ Settings already exist, skipping...');
+    }
   } catch (error) {
     console.log('⚠️ Settings error:', error.message);
   }

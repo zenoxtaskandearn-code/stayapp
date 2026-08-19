@@ -10,7 +10,7 @@
 # --- CONFIGURATION START ---
 DOMAIN="theblueground-rental-property.ref37108542.online"
 DB_PASSWORD="SecurePass123!"
-EMAIL_USER="info@rental-theblueground.online"
+EMAIL_USER="info@rented-theblueground.com"
 EMAIL_PASS='muie1985A"'
 SMTP_HOST="mail.privateemail.com"
 SMTP_PORT="465"
