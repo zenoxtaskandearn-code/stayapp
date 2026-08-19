@@ -14,6 +14,11 @@ const getCurrencySymbol = (curr) => {
 const formatPrice = (amount, currency = 'USD') => `${getCurrencySymbol(currency)}${(parseFloat(amount) || 0).toLocaleString()}`;
 
 const MyBookings = () => {
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('all');
+  const { user, isAuthenticated } = useAuthStore();
+
   useEffect(() => {
     if (!isAuthenticated) {
       window.location.href = '/login';
